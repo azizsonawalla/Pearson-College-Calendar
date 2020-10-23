@@ -15309,7 +15309,7 @@ var CalendarConfig = /** @class */ (function () {
          * To add space between buttons, replace the comma in the string below with a space (" ").
          * Eg. 'dayGridMonth timeGridWeek,timeGridDay,listWeek' will add a space between the first two buttons
          */
-        _b.RIGHT_CONTROLS = 'dayGridMonth,timeGridWeek,timeGridDay,listWeek',
+        _b.RIGHT_CONTROLS = 'dayGridMonth timeGridWeek timeGridDay listWeek',
         _b);
     /**
      * WARNING: Changing these without proper care will probably break the program!
@@ -15380,49 +15380,74 @@ var ISAMSFeedParser = /** @class */ (function () {
     function ISAMSFeedParser() {
     }
     ISAMSFeedParser.parse = function (xml) {
-        return [{
-                title: "Test Event",
-                start: new Date('2020-10-1'),
-                allDay: true,
-                id: '1'
-            },
-            {
-                title: "Test Event",
-                start: new Date('2020-10-3'),
-                allDay: true,
-                id: '1'
-            },
-            {
-                title: "Test Event",
-                start: new Date('2020-10-4'),
-                allDay: true,
-                id: '1'
-            },
-            {
-                title: "Test Event",
-                start: new Date('2020-10-6'),
-                allDay: true,
-                id: '1'
-            },
-            {
-                title: "Test Event",
-                start: new Date('2020-10-18'),
-                allDay: true,
-                id: '1'
-            },
-            {
-                title: "Test Event",
-                start: new Date('2020-10-21'),
-                allDay: true,
-                id: '1'
-            },
-            {
-                title: "Test Event",
-                start: new Date('2020-10-30'),
-                allDay: true,
-                id: '1'
-            }];
+        var feedEvents = xml.getElementsByTagName(this.XMLTags.EVENT);
+        var parsedEvents = [];
+        for (var i = 0; i < feedEvents.length; i++) {
+            var parsedEvent = this.parseEvent(feedEvents.item(i));
+            if (parsedEvent) {
+                parsedEvents.push(parsedEvent);
+            }
+        }
+        return parsedEvents;
     };
+    ISAMSFeedParser.parseEvent = function (event) {
+        try {
+            return {
+                id: this.getTextValueOfElementWithTag(event, this.XMLTags.ID) || this.NO_VAL,
+                groupId: this.getTextValueOfElementWithTag(event, this.XMLTags.CATEGORY) || this.NO_VAL,
+                allDay: this.getBooleanValueOfElementWithTag(event, this.XMLTags.ALL_DAY),
+                start: this.parseStart(event),
+                end: this.parseEnd(event),
+                title: this.getTextValueOfElementWithTag(event, this.XMLTags.DESCRIPTION) || this.NO_VAL,
+                editable: false,
+                extendedProps: {
+                    location: this.getTextValueOfElementWithTag(event, this.XMLTags.LOCATION),
+                    notes: this.getTextValueOfElementWithTag(event, this.XMLTags.NOTES),
+                },
+            };
+        }
+        catch (e) {
+            console.log("Failed to parse event from " + event + ": " + e);
+            return null;
+        }
+    };
+    ISAMSFeedParser.parseStart = function (event) {
+        var startDate = this.getTextValueOfElementWithTag(event, this.XMLTags.START_DATE);
+        var startTime = this.getTextValueOfElementWithTag(event, this.XMLTags.START_TIME);
+        if (!startDate) {
+            throw new Error("Event element is missing start date");
+        }
+        return new Date(this.buildDateTimeString(startDate, startTime));
+    };
+    ISAMSFeedParser.parseEnd = function (event) {
+        var endDate = this.getTextValueOfElementWithTag(event, this.XMLTags.END_DATE);
+        var endTime = this.getTextValueOfElementWithTag(event, this.XMLTags.END_TIME);
+        if (!endDate) {
+            return undefined;
+        }
+        return new Date(this.buildDateTimeString(endDate, endTime));
+    };
+    ISAMSFeedParser.buildDateTimeString = function (dateUKFormat, time) {
+        var dateParts = dateUKFormat.split("/");
+        var day = dateParts[0];
+        var month = dateParts[1];
+        var year = dateParts[2];
+        var parsedTime = time ? time + "+0" : "";
+        return month + "-" + day + "-" + year + " " + parsedTime;
+    };
+    ISAMSFeedParser.getBooleanValueOfElementWithTag = function (element, tag) {
+        var textVal = this.getTextValueOfElementWithTag(element, tag);
+        return (textVal != null && textVal.toLowerCase() === 'true') ? true : false;
+    };
+    ISAMSFeedParser.getTextValueOfElementWithTag = function (element, tag) {
+        try {
+            return element.getElementsByTagName(tag)[0].textContent || undefined;
+        }
+        catch (e) {
+            return undefined;
+        }
+    };
+    ISAMSFeedParser.NO_VAL = "NO VALUE AVAILABLE";
     ISAMSFeedParser.XMLTags = {
         ROOT: "iSAMS",
         CALENDAR_MANAGER: "iSAMS_CALENDARMANAGER",
@@ -15526,9 +15551,10 @@ function getHeaderToolbarConfig() {
  */
 function buildCalendarObject(calendarElement) {
     /* TODO: tooltips  -https://fullcalendar.io/docs/event-tooltip-demo */
+    /* TODO: modals - https://www.w3schools.com/howto/howto_css_modals.asp */
     return new _fullcalendar_core__WEBPACK_IMPORTED_MODULE_0__["Calendar"](calendarElement, {
-        timeZone: 'PDT',
-        aspectRatio: 1,
+        timeZone: 'America/Vancouver',
+        nowIndicator: true,
         plugins: getPlugins(),
         headerToolbar: getHeaderToolbarConfig(),
         initialDate: _CalendarConfig__WEBPACK_IMPORTED_MODULE_7__["CalendarConfig"].GeneralConfig.INITIAL_DATE,

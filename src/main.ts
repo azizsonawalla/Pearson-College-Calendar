@@ -53,11 +53,12 @@ function getHeaderToolbarConfig(): ToolbarInput {
  */
 function buildCalendarObject(calendarElement: HTMLElement): Calendar {
   /* TODO: tooltips  -https://fullcalendar.io/docs/event-tooltip-demo */
+  /* TODO: modals - https://www.w3schools.com/howto/howto_css_modals.asp */
   return new Calendar(
     calendarElement, 
     {
-      timeZone: 'PDT',
-      aspectRatio: 1,
+      timeZone: 'America/Vancouver',
+      nowIndicator: true,
       plugins: getPlugins(),
       headerToolbar: getHeaderToolbarConfig(),
       initialDate: CalendarConfig.GeneralConfig.INITIAL_DATE,

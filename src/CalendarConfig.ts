@@ -69,7 +69,7 @@ export class CalendarConfig {
      * To add space between buttons, replace the comma in the string below with a space (" ").
      * Eg. 'dayGridMonth timeGridWeek,timeGridDay,listWeek' will add a space between the first two buttons
      */
-    public static RIGHT_CONTROLS: string = 'dayGridMonth,timeGridWeek,timeGridDay,listWeek';
+    public static RIGHT_CONTROLS: string = 'dayGridMonth timeGridWeek timeGridDay listWeek';
 
   };
 

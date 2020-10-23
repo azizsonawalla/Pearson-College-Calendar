@@ -6,6 +6,8 @@ import { FullCalendarEvent } from "./FullCalendarEvent";
  */
 export class ISAMSFeedParser {
 
+    private static NO_VAL: string = "NO VALUE AVAILABLE";
+
     private static XMLTags = {
         ROOT: "iSAMS",
         CALENDAR_MANAGER: "iSAMS_CALENDARMANAGER",
@@ -25,47 +27,79 @@ export class ISAMSFeedParser {
     }
 
     public static parse(xml: XMLDocument): FullCalendarEvent[] {
-        return [{
-            title: "Test Event",
-            start: new Date('2020-10-1'),
-            allDay: true,
-            id: '1'
+        const feedEvents: HTMLCollectionOf<Element> = xml.getElementsByTagName(this.XMLTags.EVENT);
+        const parsedEvents: FullCalendarEvent[] = [];
+        for (let i=0; i < feedEvents.length; i++) {
+          const parsedEvent = this.parseEvent(feedEvents.item(i) as HTMLElement);
+          if (parsedEvent) {
+            parsedEvents.push(parsedEvent);
+          }
+        }
+        return parsedEvents;
+    }
+
+    private static parseEvent(event: HTMLElement): FullCalendarEvent | null {
+      try {
+        return {
+          id: this.getTextValueOfElementWithTag(event, this.XMLTags.ID) || this.NO_VAL,
+          groupId: this.getTextValueOfElementWithTag(event, this.XMLTags.CATEGORY) || this.NO_VAL,
+          allDay: this.getBooleanValueOfElementWithTag(event, this.XMLTags.ALL_DAY),
+          start: this.parseStart(event),
+          end: this.parseEnd(event),
+          title: this.getTextValueOfElementWithTag(event, this.XMLTags.DESCRIPTION) || this.NO_VAL,
+          editable: false,
+          extendedProps: {
+              location: this.getTextValueOfElementWithTag(event, this.XMLTags.LOCATION),
+              notes: this.getTextValueOfElementWithTag(event, this.XMLTags.NOTES),
           },
-          {
-            title: "Test Event",
-            start: new Date('2020-10-3'),
-            allDay: true,
-            id: '1'
-          },
-          {
-            title: "Test Event",
-            start: new Date('2020-10-4'),
-            allDay: true,
-            id: '1'
-          },
-          {
-            title: "Test Event",
-            start: new Date('2020-10-6'),
-            allDay: true,
-            id: '1'
-          },
-          {
-            title: "Test Event",
-            start: new Date('2020-10-18'),
-            allDay: true,
-            id: '1'
-          },
-          {
-            title: "Test Event",
-            start: new Date('2020-10-21'),
-            allDay: true,
-            id: '1'
-          },
-          {
-            title: "Test Event",
-            start: new Date('2020-10-30'),
-            allDay: true,
-            id: '1'
-          }];
+        }
+      } catch (e) {
+        console.log(`Failed to parse event from ${event}: ${e}`);
+        return null;
+      }
+    }
+
+    private static parseStart(event: HTMLElement): Date {
+      const startDate = this.getTextValueOfElementWithTag(event, this.XMLTags.START_DATE);
+      const startTime = this.getTextValueOfElementWithTag(event, this.XMLTags.START_TIME);
+
+      if (!startDate) {
+        throw new Error("Event element is missing start date");
+      }
+      return new Date(this.buildDateTimeString(startDate, startTime));
+    }
+
+    private static parseEnd(event: HTMLElement): Date | undefined {
+      const endDate = this.getTextValueOfElementWithTag(event, this.XMLTags.END_DATE);
+      const endTime = this.getTextValueOfElementWithTag(event, this.XMLTags.END_TIME);
+
+      if (!endDate) {
+        return undefined;
+      }
+      return new Date(this.buildDateTimeString(endDate, endTime));
+    }
+
+    private static buildDateTimeString(dateUKFormat: string, time?: string): string {
+      const dateParts = dateUKFormat.split("/");
+      const day = dateParts[0];
+      const month = dateParts[1];
+      const year = dateParts[2];
+
+      const parsedTime = time ? `${time}+0` : ``;
+
+      return `${month}-${day}-${year} ${parsedTime}`;
+    }
+
+    private static getBooleanValueOfElementWithTag(element: HTMLElement, tag: string): boolean {
+      const textVal = this.getTextValueOfElementWithTag(element, tag);
+      return (textVal != null && textVal.toLowerCase() === 'true') ? true: false;
+    }
+
+    private static getTextValueOfElementWithTag(element: HTMLElement, tag: string): string | undefined {
+      try {
+        return element.getElementsByTagName(tag)[0].textContent || undefined;
+      } catch (e) {
+        return undefined;
+      }
     }
 }
