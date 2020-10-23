@@ -1,14 +1,9 @@
+import {TEST_FEED} from './testFeed';
+
 export class isamsFeed {
-    public static readLatest() {
-        var x = new XMLHttpRequest();
-        x.open("GET", "https://isams.pearsoncollege.ca/system/api/feeds/calendar.ashx");
-        x.onreadystatechange = function () {
-          if (x.readyState == 4 && x.status == 200) {
-            var doc = x.responseXML;
-            console.log(doc);
-          }
-        };
-        x.send();
-        return {};
+    public static readLatest(): XMLDocument {
+        // TODO: workaround from local file for now
+        // get feed from isams
+        return new DOMParser().parseFromString(TEST_FEED, "text/xml");
     }
 }
