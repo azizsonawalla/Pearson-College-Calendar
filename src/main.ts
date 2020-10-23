@@ -1,97 +1,91 @@
-import { Calendar, Component, createElement, DayHeaderContentArg } from '@fullcalendar/core';
+import { Calendar, Component, createElement, DayHeaderContentArg, EventInput, PluginDef, ToolbarInput } from '@fullcalendar/core';
 import interactionPlugin from '@fullcalendar/interaction';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import listPlugin from '@fullcalendar/list';
-import {isamsFeed} from './isamsFeed';
+import {FullCalendarEvent} from './FullCalendarEvent';
+import {ISAMSFeed} from './ISAMSFeed';
+import {ISAMSFeedParser} from './ISAMSFeedParser';
 import './main.css';
+import { CalendarConfig } from './CalendarConfig';
 
-/* TODO: tooltips  -https://fullcalendar.io/docs/event-tooltip-demo */
-
-document.addEventListener('DOMContentLoaded', function() {
-  let calendarEl: HTMLElement = document.getElementById('calendar')!;
-
-  class CustomDayHeader extends Component<{ text: string }> {
-    render() {
-      return createElement('div', {}, '!' + this.props.text + '!')
-    }
+/**
+ * Grabs the reference to the div with id 'calendar' in the HTML DOM
+ */
+function getCalendarHTMLElement(): HTMLElement {
+  const calendarElement: HTMLElement = document.getElementById(CalendarConfig.ImplementationConfig.CALENDAR_DIV_ID)!;
+  if (!calendarElement) {
+    throw new Error("Could not find Calendar element: HTML DOM needs to contain a div with id 'calendar'");
   }
+  return calendarElement;
+}
 
-  let calendar = new Calendar(calendarEl, {
-    plugins: [ interactionPlugin, dayGridPlugin, timeGridPlugin, listPlugin ],
-    headerToolbar: {
-      left: 'prev,next today',
-      center: 'title',
-      right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
-    },
-    initialDate: '2018-01-12',
-    navLinks: true, // can click day/week names to navigate views
-    editable: true,
-    dayMaxEvents: true, // allow "more" link when too many events
-    dayHeaderContent(arg: DayHeaderContentArg) {
-      return createElement(CustomDayHeader, { text: arg.text })
-    },
-    events: [
-      {
-        title: 'All Day Event',
-        start: '2018-01-01',
-      },
-      {
-        title: 'Long Event',
-        start: '2018-01-07',
-        end: '2018-01-10'
-      },
-      {
-        groupId: '999',
-        title: 'Repeating Event',
-        start: '2018-01-09T16:00:00'
-      },
-      {
-        groupId: '999',
-        title: 'Repeating Event',
-        start: '2018-01-16T16:00:00'
-      },
-      {
-        title: 'Conference',
-        start: '2018-01-11',
-        end: '2018-01-13'
-      },
-      {
-        title: 'Meeting',
-        start: '2018-01-12T10:30:00',
-        end: '2018-01-12T12:30:00'
-      },
-      {
-        title: 'Lunch',
-        start: '2018-01-12T12:00:00'
-      },
-      {
-        title: 'Meeting',
-        start: '2018-01-12T14:30:00'
-      },
-      {
-        title: 'Happy Hour',
-        start: '2018-01-12T17:30:00'
-      },
-      {
-        title: 'Dinner',
-        start: '2018-01-12T20:00:00'
-      },
-      {
-        title: 'Birthday Party',
-        start: '2018-01-13T07:00:00',
-        extendedProps: {
-          Notes: "Some notes"
-        }
-      },
-      {
-        title: 'Click for Google',
-        url: 'http://google.com/',
-        start: new Date('2018-01-28 9:00')
-      }
-    ]
-  });
+/**
+ * Retrieves the events to render on the calendar
+ */
+function getEvents(): FullCalendarEvent[] {
+  const xmlFeed: XMLDocument = ISAMSFeed.readLatest();
+  return ISAMSFeedParser.parse(xmlFeed);
+}
 
-  isamsFeed.readLatest();
+/**
+ * Returns an array of the plugins required to render the calendar
+ */
+function getPlugins(): PluginDef[] {
+  return [ interactionPlugin, dayGridPlugin, timeGridPlugin, listPlugin ];
+}
+
+/**
+ * Builds and returns the configuration object for the header toolbar
+ */
+function getHeaderToolbarConfig(): ToolbarInput {
+  return {
+    left: CalendarConfig.HeaderConfig.LEFT_CONTROLS,
+    center:  CalendarConfig.HeaderConfig.CENTER_CONTROLS,
+    right:  CalendarConfig.HeaderConfig.RIGHT_CONTROLS
+  }
+}
+
+/**
+ * Builds the Calendar object with the given configuration
+ * @param calendarElement reference to the div element in the DOM where the calendar
+ *                   will be rendered.
+ */
+function buildCalendarObject(calendarElement: HTMLElement): Calendar {
+  return new Calendar(
+    calendarElement, 
+    {
+      plugins: getPlugins(),
+      headerToolbar: getHeaderToolbarConfig(),
+      initialDate: CalendarConfig.GeneralConfig.INITIAL_DATE,
+      navLinks: CalendarConfig.GeneralConfig.ENABLE_NAV_LINKS_ON_DAY_NAMES,
+      editable: CalendarConfig.GeneralConfig.CALENDAR_IS_EDITABLE,
+      dayMaxEvents: CalendarConfig.GeneralConfig.COLLAPSE_EVENTS_TO_MORE_LINK,
+      events: getEvents()
+    }
+  );
+}
+
+/**
+ * Renders the calendar
+ */
+function renderCalendar() {
+  let calendarElement: HTMLElement = getCalendarHTMLElement();
+  let calendar = buildCalendarObject(calendarElement);
   calendar.render();
-});
+}
+
+/**
+ * Binds the rendering of the calendar to the configured DOM event
+ */
+function addListenerToEvent() {
+  document.addEventListener(
+    CalendarConfig.ImplementationConfig.EVENT_NAME_FOR_RENDER_LISTENER, 
+    renderCalendar
+  );
+}
+
+/**
+ * Entry-point for rendering the calendar
+ */
+addListenerToEvent();

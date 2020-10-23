@@ -15226,27 +15226,215 @@ function __classPrivateFieldSet(receiver, privateMap, value) {
 
 /***/ }),
 
-/***/ "./src/isamsFeed.ts":
-/*!**************************!*\
-  !*** ./src/isamsFeed.ts ***!
-  \**************************/
-/*! exports provided: isamsFeed */
+/***/ "./src/CalendarConfig.ts":
+/*!*******************************!*\
+  !*** ./src/CalendarConfig.ts ***!
+  \*******************************/
+/*! exports provided: CalendarConfig */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isamsFeed", function() { return isamsFeed; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "CalendarConfig", function() { return CalendarConfig; });
+/* TODO: tooltips  -https://fullcalendar.io/docs/event-tooltip-demo */
+var CalendarConfig = /** @class */ (function () {
+    function CalendarConfig() {
+    }
+    var _a, _b, _c;
+    CalendarConfig.GeneralConfig = (_a = /** @class */ (function () {
+            function class_1() {
+            }
+            return class_1;
+        }()),
+        /**
+         * The date that the calendar should open on to when
+         * first started.
+         */
+        _a.INITIAL_DATE = new Date() // open on to today's date
+    ,
+        /**
+         * When set to 'false', the calendar disables user controls to edit the events in the calendar.
+         * i.e. the user won't be able to drag the events around to change dates.
+         *
+         * Note: switching this to 'true' will not automatically update the events in the source
+         * feed (i.e. iSAMS). To send user changes back to iSAMs requires adding a handler to the
+         * date change event that pushes changes back to iSAMS.
+         */
+        _a.CALENDAR_IS_EDITABLE = false,
+        /**
+         * When set to 'true', the user can click on the names of the days to navigate to
+         * that specific day (in day/week view only).
+         */
+        _a.ENABLE_NAV_LINKS_ON_DAY_NAMES = true,
+        /**
+         * When set to 'true', collapse events into 'X+ more' link when too many events to fit in view.
+         * When set to 'false', all events will be shown by 'stretching' the cell in the calendar to
+         * make them all fit
+         */
+        _a.COLLAPSE_EVENTS_TO_MORE_LINK = true,
+        _a);
+    CalendarConfig.HeaderConfig = (_b = /** @class */ (function () {
+            function class_2() {
+            }
+            return class_2;
+        }()),
+        /**
+         * Controls to show on the left side in the header.
+         * prev = previous button (left arrow)
+         * next = next button (right arrow)
+         * today = today button (takes you to today's date)
+         *
+         * To remove space between buttons, replace the space in the string below with a comma (,).
+         * Eg. 'prev,next today' will remove the space between the left and right arrow buttons
+         */
+        _b.LEFT_CONTROLS = 'prev next today',
+        /**
+         * Controls to show in the center of the header toolbar
+         * title = name of the month/week/day currently being viewed
+         */
+        _b.CENTER_CONTROLS = 'title',
+        /**
+         * Controls to show on the right side of the header toolbar
+         * dayGridMonth = a button to switch to month-view in grid style
+         * timeGridWeek =  a button to switch to week-view in grid style
+         * timeGridDay =  a button to switch to day-view
+         * listWeek =  a button to switch to list-view
+         *
+         * To add space between buttons, replace the comma in the string below with a space (" ").
+         * Eg. 'dayGridMonth timeGridWeek,timeGridDay,listWeek' will add a space between the first two buttons
+         */
+        _b.RIGHT_CONTROLS = 'dayGridMonth,timeGridWeek,timeGridDay,listWeek',
+        _b);
+    /**
+     * WARNING: Changing these without proper care will probably break the program!
+     */
+    CalendarConfig.ImplementationConfig = (_c = /** @class */ (function () {
+            function class_3() {
+            }
+            return class_3;
+        }()),
+        /**
+         * The HTML id of the div in the DOM where the calendar should be inserted
+         */
+        _c.CALENDAR_DIV_ID = 'calendar',
+        /**
+         * The DOM event to bind the render function to.
+         */
+        _c.EVENT_NAME_FOR_RENDER_LISTENER = 'DOMContentLoaded',
+        _c);
+    return CalendarConfig;
+}());
+
+
+
+/***/ }),
+
+/***/ "./src/ISAMSFeed.ts":
+/*!**************************!*\
+  !*** ./src/ISAMSFeed.ts ***!
+  \**************************/
+/*! exports provided: ISAMSFeed */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ISAMSFeed", function() { return ISAMSFeed; });
 /* harmony import */ var _testFeed__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./testFeed */ "./src/testFeed.ts");
 
-var isamsFeed = /** @class */ (function () {
-    function isamsFeed() {
+var ISAMSFeed = /** @class */ (function () {
+    function ISAMSFeed() {
     }
-    isamsFeed.readLatest = function () {
+    ISAMSFeed.readLatest = function () {
         // TODO: workaround from local file for now
         // get feed from isams
         return new DOMParser().parseFromString(_testFeed__WEBPACK_IMPORTED_MODULE_0__["TEST_FEED"], "text/xml");
     };
-    return isamsFeed;
+    return ISAMSFeed;
+}());
+
+
+
+/***/ }),
+
+/***/ "./src/ISAMSFeedParser.ts":
+/*!********************************!*\
+  !*** ./src/ISAMSFeedParser.ts ***!
+  \********************************/
+/*! exports provided: ISAMSFeedParser */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ISAMSFeedParser", function() { return ISAMSFeedParser; });
+/**
+ * A parser to translate iSAMs' XML calendar feed
+ * to FullCalendarEvents
+ */
+var ISAMSFeedParser = /** @class */ (function () {
+    function ISAMSFeedParser() {
+    }
+    ISAMSFeedParser.parse = function (xml) {
+        return [{
+                title: "Test Event",
+                start: new Date(),
+                allDay: true,
+                id: '1'
+            },
+            {
+                title: "Test Event",
+                start: new Date(),
+                allDay: true,
+                id: '1'
+            },
+            {
+                title: "Test Event",
+                start: new Date(),
+                allDay: true,
+                id: '1'
+            },
+            {
+                title: "Test Event",
+                start: new Date(),
+                allDay: true,
+                id: '1'
+            },
+            {
+                title: "Test Event",
+                start: new Date(),
+                allDay: true,
+                id: '1'
+            },
+            {
+                title: "Test Event",
+                start: new Date(),
+                allDay: true,
+                id: '1'
+            },
+            {
+                title: "Test Event",
+                start: new Date(),
+                allDay: true,
+                id: '1'
+            }];
+    };
+    ISAMSFeedParser.XMLTags = {
+        ROOT: "iSAMS",
+        CALENDAR_MANAGER: "iSAMS_CALENDARMANAGER",
+        EVENT: "event",
+        ID: "id",
+        START_DATE: "startdate",
+        START_TIME: "starttime",
+        END_DATE: "enddate",
+        END_TIME: "endtime",
+        ALL_DAY: "alldayevent",
+        DESCRIPTION: "description",
+        CATEGORY: "category",
+        LOCATION: "location",
+        NOTES: "notes",
+        SUBMIT_BY: "submitby",
+        SUBMIT_DATE: "submitdate"
+    };
+    return ISAMSFeedParser;
 }());
 
 
@@ -15278,119 +15466,87 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _fullcalendar_daygrid__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @fullcalendar/daygrid */ "./node_modules/@fullcalendar/daygrid/main.js");
 /* harmony import */ var _fullcalendar_timegrid__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @fullcalendar/timegrid */ "./node_modules/@fullcalendar/timegrid/main.js");
 /* harmony import */ var _fullcalendar_list__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @fullcalendar/list */ "./node_modules/@fullcalendar/list/main.js");
-/* harmony import */ var _isamsFeed__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./isamsFeed */ "./src/isamsFeed.ts");
-/* harmony import */ var _main_css__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./main.css */ "./src/main.css");
-/* harmony import */ var _main_css__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(_main_css__WEBPACK_IMPORTED_MODULE_6__);
-var __extends = (undefined && undefined.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-        return extendStatics(d, b);
+/* harmony import */ var _ISAMSFeed__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./ISAMSFeed */ "./src/ISAMSFeed.ts");
+/* harmony import */ var _ISAMSFeedParser__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./ISAMSFeedParser */ "./src/ISAMSFeedParser.ts");
+/* harmony import */ var _main_css__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./main.css */ "./src/main.css");
+/* harmony import */ var _main_css__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(_main_css__WEBPACK_IMPORTED_MODULE_7__);
+/* harmony import */ var _CalendarConfig__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./CalendarConfig */ "./src/CalendarConfig.ts");
+
+
+
+
+
+
+
+
+
+/**
+ * Grabs the reference to the div with id 'calendar' in the HTML DOM
+ */
+function getCalendarHTMLElement() {
+    var calendarElement = document.getElementById(_CalendarConfig__WEBPACK_IMPORTED_MODULE_8__["CalendarConfig"].ImplementationConfig.CALENDAR_DIV_ID);
+    if (!calendarElement) {
+        throw new Error("Could not find Calendar element: HTML DOM needs to contain a div with id 'calendar'");
+    }
+    return calendarElement;
+}
+/**
+ * Retrieves the events to render on the calendar
+ */
+function getEvents() {
+    var xmlFeed = _ISAMSFeed__WEBPACK_IMPORTED_MODULE_5__["ISAMSFeed"].readLatest();
+    return _ISAMSFeedParser__WEBPACK_IMPORTED_MODULE_6__["ISAMSFeedParser"].parse(xmlFeed);
+}
+/**
+ * Returns an array of the plugins required to render the calendar
+ */
+function getPlugins() {
+    return [_fullcalendar_interaction__WEBPACK_IMPORTED_MODULE_1__["default"], _fullcalendar_daygrid__WEBPACK_IMPORTED_MODULE_2__["default"], _fullcalendar_timegrid__WEBPACK_IMPORTED_MODULE_3__["default"], _fullcalendar_list__WEBPACK_IMPORTED_MODULE_4__["default"]];
+}
+/**
+ * Builds and returns the configuration object for the header toolbar
+ */
+function getHeaderToolbarConfig() {
+    return {
+        left: _CalendarConfig__WEBPACK_IMPORTED_MODULE_8__["CalendarConfig"].HeaderConfig.LEFT_CONTROLS,
+        center: _CalendarConfig__WEBPACK_IMPORTED_MODULE_8__["CalendarConfig"].HeaderConfig.CENTER_CONTROLS,
+        right: _CalendarConfig__WEBPACK_IMPORTED_MODULE_8__["CalendarConfig"].HeaderConfig.RIGHT_CONTROLS
     };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-
-
-
-
-
-
-
-/* TODO: tooltips  -https://fullcalendar.io/docs/event-tooltip-demo */
-document.addEventListener('DOMContentLoaded', function () {
-    var calendarEl = document.getElementById('calendar');
-    var CustomDayHeader = /** @class */ (function (_super) {
-        __extends(CustomDayHeader, _super);
-        function CustomDayHeader() {
-            return _super !== null && _super.apply(this, arguments) || this;
-        }
-        CustomDayHeader.prototype.render = function () {
-            return Object(_fullcalendar_core__WEBPACK_IMPORTED_MODULE_0__["createElement"])('div', {}, '!' + this.props.text + '!');
-        };
-        return CustomDayHeader;
-    }(_fullcalendar_core__WEBPACK_IMPORTED_MODULE_0__["Component"]));
-    var calendar = new _fullcalendar_core__WEBPACK_IMPORTED_MODULE_0__["Calendar"](calendarEl, {
-        plugins: [_fullcalendar_interaction__WEBPACK_IMPORTED_MODULE_1__["default"], _fullcalendar_daygrid__WEBPACK_IMPORTED_MODULE_2__["default"], _fullcalendar_timegrid__WEBPACK_IMPORTED_MODULE_3__["default"], _fullcalendar_list__WEBPACK_IMPORTED_MODULE_4__["default"]],
-        headerToolbar: {
-            left: 'prev,next today',
-            center: 'title',
-            right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
-        },
-        initialDate: '2018-01-12',
-        navLinks: true,
-        editable: true,
-        dayMaxEvents: true,
-        dayHeaderContent: function (arg) {
-            return Object(_fullcalendar_core__WEBPACK_IMPORTED_MODULE_0__["createElement"])(CustomDayHeader, { text: arg.text });
-        },
-        events: [
-            {
-                title: 'All Day Event',
-                start: '2018-01-01',
-            },
-            {
-                title: 'Long Event',
-                start: '2018-01-07',
-                end: '2018-01-10'
-            },
-            {
-                groupId: '999',
-                title: 'Repeating Event',
-                start: '2018-01-09T16:00:00'
-            },
-            {
-                groupId: '999',
-                title: 'Repeating Event',
-                start: '2018-01-16T16:00:00'
-            },
-            {
-                title: 'Conference',
-                start: '2018-01-11',
-                end: '2018-01-13'
-            },
-            {
-                title: 'Meeting',
-                start: '2018-01-12T10:30:00',
-                end: '2018-01-12T12:30:00'
-            },
-            {
-                title: 'Lunch',
-                start: '2018-01-12T12:00:00'
-            },
-            {
-                title: 'Meeting',
-                start: '2018-01-12T14:30:00'
-            },
-            {
-                title: 'Happy Hour',
-                start: '2018-01-12T17:30:00'
-            },
-            {
-                title: 'Dinner',
-                start: '2018-01-12T20:00:00'
-            },
-            {
-                title: 'Birthday Party',
-                start: '2018-01-13T07:00:00',
-                extendedProps: {
-                    Notes: "Some notes"
-                }
-            },
-            {
-                title: 'Click for Google',
-                url: 'http://google.com/',
-                start: new Date('2018-01-28 9:00')
-            }
-        ]
+}
+/**
+ * Builds the Calendar object with the given configuration
+ * @param calendarElement reference to the div element in the DOM where the calendar
+ *                   will be rendered.
+ */
+function buildCalendarObject(calendarElement) {
+    return new _fullcalendar_core__WEBPACK_IMPORTED_MODULE_0__["Calendar"](calendarElement, {
+        plugins: getPlugins(),
+        headerToolbar: getHeaderToolbarConfig(),
+        initialDate: _CalendarConfig__WEBPACK_IMPORTED_MODULE_8__["CalendarConfig"].GeneralConfig.INITIAL_DATE,
+        navLinks: _CalendarConfig__WEBPACK_IMPORTED_MODULE_8__["CalendarConfig"].GeneralConfig.ENABLE_NAV_LINKS_ON_DAY_NAMES,
+        editable: _CalendarConfig__WEBPACK_IMPORTED_MODULE_8__["CalendarConfig"].GeneralConfig.CALENDAR_IS_EDITABLE,
+        dayMaxEvents: _CalendarConfig__WEBPACK_IMPORTED_MODULE_8__["CalendarConfig"].GeneralConfig.COLLAPSE_EVENTS_TO_MORE_LINK,
+        events: getEvents()
     });
-    _isamsFeed__WEBPACK_IMPORTED_MODULE_5__["isamsFeed"].readLatest();
+}
+/**
+ * Renders the calendar
+ */
+function renderCalendar() {
+    var calendarElement = getCalendarHTMLElement();
+    var calendar = buildCalendarObject(calendarElement);
     calendar.render();
-});
+}
+/**
+ * Binds the rendering of the calendar to the configured DOM event
+ */
+function addListenerToEvent() {
+    document.addEventListener(_CalendarConfig__WEBPACK_IMPORTED_MODULE_8__["CalendarConfig"].ImplementationConfig.EVENT_NAME_FOR_RENDER_LISTENER, renderCalendar);
+}
+/**
+ * Entry-point for rendering the calendar
+ */
+addListenerToEvent();
 
 
 /***/ }),
