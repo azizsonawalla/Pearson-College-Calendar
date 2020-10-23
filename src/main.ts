@@ -3,7 +3,10 @@ import interactionPlugin from '@fullcalendar/interaction';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import listPlugin from '@fullcalendar/list';
+import {isamsFeed} from './isamsFeed';
 import './main.css';
+
+/* TODO: tooltips  -https://fullcalendar.io/docs/event-tooltip-demo */
 
 document.addEventListener('DOMContentLoaded', function() {
   let calendarEl: HTMLElement = document.getElementById('calendar')!;
@@ -76,15 +79,19 @@ document.addEventListener('DOMContentLoaded', function() {
       },
       {
         title: 'Birthday Party',
-        start: '2018-01-13T07:00:00'
+        start: '2018-01-13T07:00:00',
+        extendedProps: {
+          Notes: "Some notes"
+        }
       },
       {
         title: 'Click for Google',
         url: 'http://google.com/',
-        start: '2018-01-28'
+        start: new Date('2018-01-28 9:00')
       }
     ]
   });
 
+  isamsFeed.readLatest();
   calendar.render();
 });

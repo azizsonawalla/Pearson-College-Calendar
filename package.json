@@ -1,9 +1,9 @@
 {
   "private": true,
-  "name": "@fullcalendar-example-projects/typescript",
-  "version": "0.0.0",
+  "name": "pearson-college-calendar",
+  "version": "1.0.0",
   "license": "ISC",
-  "author": "Adam Shaw <arshaw@arshaw.com> (http://arshaw.com/)",
+  "author": "Aziz Sonawalla (asonawalla@pearsoncollege.ca)",
   "scripts": {
     "build": "webpack",
     "watch": "webpack --watch",
@@ -17,10 +17,14 @@
     "@fullcalendar/list": "^5.0.0"
   },
   "devDependencies": {
+    "@types/assert": "^1.5.2",
+    "@types/mocha": "^8.0.3",
     "css-loader": "^3.4.2",
     "mini-css-extract-plugin": "^0.9.0",
+    "mocha": "^8.2.0",
     "ts-loader": "^5.3.3",
-    "typescript": "^3.2.4",
+    "ts-node": "^9.0.0",
+    "typescript": "^3.9.7",
     "webpack": "^4.29.0",
     "webpack-cli": "^3.2.1"
   }

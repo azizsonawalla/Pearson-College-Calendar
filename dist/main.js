@@ -15226,6 +15226,38 @@ function __classPrivateFieldSet(receiver, privateMap, value) {
 
 /***/ }),
 
+/***/ "./src/isamsFeed.ts":
+/*!**************************!*\
+  !*** ./src/isamsFeed.ts ***!
+  \**************************/
+/*! exports provided: isamsFeed */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isamsFeed", function() { return isamsFeed; });
+var isamsFeed = /** @class */ (function () {
+    function isamsFeed() {
+    }
+    isamsFeed.readLatest = function () {
+        var x = new XMLHttpRequest();
+        x.open("GET", "https://isams.pearsoncollege.ca/system/api/feeds/calendar.ashx");
+        x.onreadystatechange = function () {
+            if (x.readyState == 4 && x.status == 200) {
+                var doc = x.responseXML;
+                console.log(doc);
+            }
+        };
+        x.send();
+        return {};
+    };
+    return isamsFeed;
+}());
+
+
+
+/***/ }),
+
 /***/ "./src/main.css":
 /*!**********************!*\
   !*** ./src/main.css ***!
@@ -15251,8 +15283,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _fullcalendar_daygrid__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @fullcalendar/daygrid */ "./node_modules/@fullcalendar/daygrid/main.js");
 /* harmony import */ var _fullcalendar_timegrid__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @fullcalendar/timegrid */ "./node_modules/@fullcalendar/timegrid/main.js");
 /* harmony import */ var _fullcalendar_list__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @fullcalendar/list */ "./node_modules/@fullcalendar/list/main.js");
-/* harmony import */ var _main_css__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./main.css */ "./src/main.css");
-/* harmony import */ var _main_css__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_main_css__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var _isamsFeed__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./isamsFeed */ "./src/isamsFeed.ts");
+/* harmony import */ var _main_css__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./main.css */ "./src/main.css");
+/* harmony import */ var _main_css__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(_main_css__WEBPACK_IMPORTED_MODULE_6__);
 var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -15272,6 +15305,8 @@ var __extends = (undefined && undefined.__extends) || (function () {
 
 
 
+
+/* TODO: tooltips  -https://fullcalendar.io/docs/event-tooltip-demo */
 document.addEventListener('DOMContentLoaded', function () {
     var calendarEl = document.getElementById('calendar');
     var CustomDayHeader = /** @class */ (function (_super) {
@@ -15346,15 +15381,19 @@ document.addEventListener('DOMContentLoaded', function () {
             },
             {
                 title: 'Birthday Party',
-                start: '2018-01-13T07:00:00'
+                start: '2018-01-13T07:00:00',
+                extendedProps: {
+                    Notes: "Some notes"
+                }
             },
             {
                 title: 'Click for Google',
                 url: 'http://google.com/',
-                start: '2018-01-28'
+                start: new Date('2018-01-28 9:00')
             }
         ]
     });
+    _isamsFeed__WEBPACK_IMPORTED_MODULE_5__["isamsFeed"].readLatest();
     calendar.render();
 });
 
