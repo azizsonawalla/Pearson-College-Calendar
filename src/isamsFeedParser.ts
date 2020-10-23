@@ -27,43 +27,43 @@ export class ISAMSFeedParser {
     public static parse(xml: XMLDocument): FullCalendarEvent[] {
         return [{
             title: "Test Event",
-            start: new Date(),
+            start: new Date('2020-10-1'),
             allDay: true,
             id: '1'
           },
           {
             title: "Test Event",
-            start: new Date(),
+            start: new Date('2020-10-3'),
             allDay: true,
             id: '1'
           },
           {
             title: "Test Event",
-            start: new Date(),
+            start: new Date('2020-10-4'),
             allDay: true,
             id: '1'
           },
           {
             title: "Test Event",
-            start: new Date(),
+            start: new Date('2020-10-6'),
             allDay: true,
             id: '1'
           },
           {
             title: "Test Event",
-            start: new Date(),
+            start: new Date('2020-10-18'),
             allDay: true,
             id: '1'
           },
           {
             title: "Test Event",
-            start: new Date(),
+            start: new Date('2020-10-21'),
             allDay: true,
             id: '1'
           },
           {
             title: "Test Event",
-            start: new Date(),
+            start: new Date('2020-10-30'),
             allDay: true,
             id: '1'
           }];

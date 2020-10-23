@@ -1,4 +1,10 @@
-/* TODO: tooltips  -https://fullcalendar.io/docs/event-tooltip-demo */
+/**
+ * Configuration for the program.
+ * 
+ * These are the 'knobs and dials' of the program extracted here for ease of tweaking and customizing.
+ * While most of these can be changed without worry, make sure to read the notes above each one and 
+ * understand the change that you are making. 
+ */
 export class CalendarConfig {
 
   public static GeneralConfig = class {

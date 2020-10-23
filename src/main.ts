@@ -1,4 +1,4 @@
-import { Calendar, Component, createElement, DayHeaderContentArg, EventInput, PluginDef, ToolbarInput } from '@fullcalendar/core';
+import { Calendar, PluginDef, ToolbarInput } from '@fullcalendar/core';
 import interactionPlugin from '@fullcalendar/interaction';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
@@ -6,8 +6,8 @@ import listPlugin from '@fullcalendar/list';
 import {FullCalendarEvent} from './FullCalendarEvent';
 import {ISAMSFeed} from './ISAMSFeed';
 import {ISAMSFeedParser} from './ISAMSFeedParser';
-import './main.css';
 import { CalendarConfig } from './CalendarConfig';
+import './main.css';
 
 /**
  * Grabs the reference to the div with id 'calendar' in the HTML DOM
@@ -52,9 +52,12 @@ function getHeaderToolbarConfig(): ToolbarInput {
  *                   will be rendered.
  */
 function buildCalendarObject(calendarElement: HTMLElement): Calendar {
+  /* TODO: tooltips  -https://fullcalendar.io/docs/event-tooltip-demo */
   return new Calendar(
     calendarElement, 
     {
+      timeZone: 'PDT',
+      aspectRatio: 1,
       plugins: getPlugins(),
       headerToolbar: getHeaderToolbarConfig(),
       initialDate: CalendarConfig.GeneralConfig.INITIAL_DATE,

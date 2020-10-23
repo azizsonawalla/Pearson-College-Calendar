@@ -15236,7 +15236,13 @@ function __classPrivateFieldSet(receiver, privateMap, value) {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "CalendarConfig", function() { return CalendarConfig; });
-/* TODO: tooltips  -https://fullcalendar.io/docs/event-tooltip-demo */
+/**
+ * Configuration for the program.
+ *
+ * These are the 'knobs and dials' of the program extracted here for ease of tweaking and customizing.
+ * While most of these can be changed without worry, make sure to read the notes above each one and
+ * understand the change that you are making.
+ */
 var CalendarConfig = /** @class */ (function () {
     function CalendarConfig() {
     }
@@ -15376,43 +15382,43 @@ var ISAMSFeedParser = /** @class */ (function () {
     ISAMSFeedParser.parse = function (xml) {
         return [{
                 title: "Test Event",
-                start: new Date(),
+                start: new Date('2020-10-1'),
                 allDay: true,
                 id: '1'
             },
             {
                 title: "Test Event",
-                start: new Date(),
+                start: new Date('2020-10-3'),
                 allDay: true,
                 id: '1'
             },
             {
                 title: "Test Event",
-                start: new Date(),
+                start: new Date('2020-10-4'),
                 allDay: true,
                 id: '1'
             },
             {
                 title: "Test Event",
-                start: new Date(),
+                start: new Date('2020-10-6'),
                 allDay: true,
                 id: '1'
             },
             {
                 title: "Test Event",
-                start: new Date(),
+                start: new Date('2020-10-18'),
                 allDay: true,
                 id: '1'
             },
             {
                 title: "Test Event",
-                start: new Date(),
+                start: new Date('2020-10-21'),
                 allDay: true,
                 id: '1'
             },
             {
                 title: "Test Event",
-                start: new Date(),
+                start: new Date('2020-10-30'),
                 allDay: true,
                 id: '1'
             }];
@@ -15468,9 +15474,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _fullcalendar_list__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @fullcalendar/list */ "./node_modules/@fullcalendar/list/main.js");
 /* harmony import */ var _ISAMSFeed__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./ISAMSFeed */ "./src/ISAMSFeed.ts");
 /* harmony import */ var _ISAMSFeedParser__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./ISAMSFeedParser */ "./src/ISAMSFeedParser.ts");
-/* harmony import */ var _main_css__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./main.css */ "./src/main.css");
-/* harmony import */ var _main_css__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(_main_css__WEBPACK_IMPORTED_MODULE_7__);
-/* harmony import */ var _CalendarConfig__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./CalendarConfig */ "./src/CalendarConfig.ts");
+/* harmony import */ var _CalendarConfig__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./CalendarConfig */ "./src/CalendarConfig.ts");
+/* harmony import */ var _main_css__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./main.css */ "./src/main.css");
+/* harmony import */ var _main_css__WEBPACK_IMPORTED_MODULE_8___default = /*#__PURE__*/__webpack_require__.n(_main_css__WEBPACK_IMPORTED_MODULE_8__);
 
 
 
@@ -15484,7 +15490,7 @@ __webpack_require__.r(__webpack_exports__);
  * Grabs the reference to the div with id 'calendar' in the HTML DOM
  */
 function getCalendarHTMLElement() {
-    var calendarElement = document.getElementById(_CalendarConfig__WEBPACK_IMPORTED_MODULE_8__["CalendarConfig"].ImplementationConfig.CALENDAR_DIV_ID);
+    var calendarElement = document.getElementById(_CalendarConfig__WEBPACK_IMPORTED_MODULE_7__["CalendarConfig"].ImplementationConfig.CALENDAR_DIV_ID);
     if (!calendarElement) {
         throw new Error("Could not find Calendar element: HTML DOM needs to contain a div with id 'calendar'");
     }
@@ -15508,9 +15514,9 @@ function getPlugins() {
  */
 function getHeaderToolbarConfig() {
     return {
-        left: _CalendarConfig__WEBPACK_IMPORTED_MODULE_8__["CalendarConfig"].HeaderConfig.LEFT_CONTROLS,
-        center: _CalendarConfig__WEBPACK_IMPORTED_MODULE_8__["CalendarConfig"].HeaderConfig.CENTER_CONTROLS,
-        right: _CalendarConfig__WEBPACK_IMPORTED_MODULE_8__["CalendarConfig"].HeaderConfig.RIGHT_CONTROLS
+        left: _CalendarConfig__WEBPACK_IMPORTED_MODULE_7__["CalendarConfig"].HeaderConfig.LEFT_CONTROLS,
+        center: _CalendarConfig__WEBPACK_IMPORTED_MODULE_7__["CalendarConfig"].HeaderConfig.CENTER_CONTROLS,
+        right: _CalendarConfig__WEBPACK_IMPORTED_MODULE_7__["CalendarConfig"].HeaderConfig.RIGHT_CONTROLS
     };
 }
 /**
@@ -15519,13 +15525,16 @@ function getHeaderToolbarConfig() {
  *                   will be rendered.
  */
 function buildCalendarObject(calendarElement) {
+    /* TODO: tooltips  -https://fullcalendar.io/docs/event-tooltip-demo */
     return new _fullcalendar_core__WEBPACK_IMPORTED_MODULE_0__["Calendar"](calendarElement, {
+        timeZone: 'PDT',
+        aspectRatio: 1,
         plugins: getPlugins(),
         headerToolbar: getHeaderToolbarConfig(),
-        initialDate: _CalendarConfig__WEBPACK_IMPORTED_MODULE_8__["CalendarConfig"].GeneralConfig.INITIAL_DATE,
-        navLinks: _CalendarConfig__WEBPACK_IMPORTED_MODULE_8__["CalendarConfig"].GeneralConfig.ENABLE_NAV_LINKS_ON_DAY_NAMES,
-        editable: _CalendarConfig__WEBPACK_IMPORTED_MODULE_8__["CalendarConfig"].GeneralConfig.CALENDAR_IS_EDITABLE,
-        dayMaxEvents: _CalendarConfig__WEBPACK_IMPORTED_MODULE_8__["CalendarConfig"].GeneralConfig.COLLAPSE_EVENTS_TO_MORE_LINK,
+        initialDate: _CalendarConfig__WEBPACK_IMPORTED_MODULE_7__["CalendarConfig"].GeneralConfig.INITIAL_DATE,
+        navLinks: _CalendarConfig__WEBPACK_IMPORTED_MODULE_7__["CalendarConfig"].GeneralConfig.ENABLE_NAV_LINKS_ON_DAY_NAMES,
+        editable: _CalendarConfig__WEBPACK_IMPORTED_MODULE_7__["CalendarConfig"].GeneralConfig.CALENDAR_IS_EDITABLE,
+        dayMaxEvents: _CalendarConfig__WEBPACK_IMPORTED_MODULE_7__["CalendarConfig"].GeneralConfig.COLLAPSE_EVENTS_TO_MORE_LINK,
         events: getEvents()
     });
 }
@@ -15541,7 +15550,7 @@ function renderCalendar() {
  * Binds the rendering of the calendar to the configured DOM event
  */
 function addListenerToEvent() {
-    document.addEventListener(_CalendarConfig__WEBPACK_IMPORTED_MODULE_8__["CalendarConfig"].ImplementationConfig.EVENT_NAME_FOR_RENDER_LISTENER, renderCalendar);
+    document.addEventListener(_CalendarConfig__WEBPACK_IMPORTED_MODULE_7__["CalendarConfig"].ImplementationConfig.EVENT_NAME_FOR_RENDER_LISTENER, renderCalendar);
 }
 /**
  * Entry-point for rendering the calendar
