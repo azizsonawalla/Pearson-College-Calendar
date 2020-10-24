@@ -3,7 +3,7 @@ import { EventInput } from "@fullcalendar/core";
 
 // TODO: re-assign compulsary props
 
-export interface FullCalendarEvent extends EventInput {
+export interface PearsonCalendarEvent extends EventInput {
     id: string;
     groupId: string;
     allDay: boolean;

@@ -1,4 +1,4 @@
-import { FullCalendarEvent } from "./FullCalendarEvent";
+import { PearsonCalendarEvent } from "../types/PearsonCalendarEvent";
 
 /**
  * A parser to translate iSAMs' XML calendar feed
@@ -26,9 +26,9 @@ export class ISAMSFeedParser {
         SUBMIT_DATE: "submitdate"
     }
 
-    public static parse(xml: XMLDocument): FullCalendarEvent[] {
+    public static parse(xml: XMLDocument): PearsonCalendarEvent[] {
         const feedEvents: HTMLCollectionOf<Element> = xml.getElementsByTagName(this.XMLTags.EVENT);
-        const parsedEvents: FullCalendarEvent[] = [];
+        const parsedEvents: PearsonCalendarEvent[] = [];
         for (let i=0; i < feedEvents.length; i++) {
           const parsedEvent = this.parseEvent(feedEvents.item(i) as HTMLElement);
           if (parsedEvent) {
@@ -38,7 +38,7 @@ export class ISAMSFeedParser {
         return parsedEvents;
     }
 
-    private static parseEvent(event: HTMLElement): FullCalendarEvent | null {
+    private static parseEvent(event: HTMLElement): PearsonCalendarEvent | null {
       try {
         return {
           id: this.getTextValueOfElementWithTag(event, this.XMLTags.ID) || this.NO_VAL,
