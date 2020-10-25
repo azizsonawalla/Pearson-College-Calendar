@@ -6,7 +6,7 @@ import listPlugin from "@fullcalendar/list";
 import { PearsonCalendarEvent } from "../types/PearsonCalendarEvent";
 import { ISAMSFeed } from "../feed/ISAMSFeed";
 import { ISAMSFeedParser } from "../feed/ISAMSFeedParser";
-import { CalendarConfig } from "../config/CalendarConfig";
+import { Config } from "../config/Config";
 import { renderPopup } from "./RenderPopup";
 
 /**
@@ -14,7 +14,7 @@ import { renderPopup } from "./RenderPopup";
  */
 function getCalendarHTMLElement(): HTMLElement {
   const calendarElement: HTMLElement = document.getElementById(
-    CalendarConfig.ImplementationConfig.CALENDAR_DIV_ID
+    Config.ImplementationConfig.CALENDAR_DIV_ID
   )!;
   if (!calendarElement) {
     throw new Error(
@@ -44,31 +44,34 @@ function getPlugins(): PluginDef[] {
  */
 function getHeaderToolbarConfig(): ToolbarInput {
   return {
-    left: CalendarConfig.HeaderConfig.LEFT_CONTROLS,
-    center: CalendarConfig.HeaderConfig.CENTER_CONTROLS,
-    right: CalendarConfig.HeaderConfig.RIGHT_CONTROLS,
+    left: Config.HeaderConfig.LEFT_CONTROLS,
+    center: Config.HeaderConfig.CENTER_CONTROLS,
+    right: Config.HeaderConfig.RIGHT_CONTROLS,
   };
+}
+
+function getCalendarStyle(): {} {
+  // TODO
+  return {};
 }
 
 /**
  * Builds the Calendar object with the given configuration
- * @param calendarElement reference to the div element in the DOM where the calendar
- *                   will be rendered.
+ * @param calendarElement reference to the div element in the DOM 
+ *                        where the calendar will be rendered.
  */
 function buildCalendarObject(calendarElement: HTMLElement): Calendar {
-  /* TODO: tooltips  -https://fullcalendar.io/docs/event-tooltip-demo */
-  /* TODO: modals - https://www.w3schools.com/howto/howto_css_modals.asp */
   return new Calendar(calendarElement, {
-    timeZone: "America/Vancouver",
     nowIndicator: true,
     plugins: getPlugins(),
     headerToolbar: getHeaderToolbarConfig(),
-    initialDate: CalendarConfig.GeneralConfig.INITIAL_DATE,
-    navLinks: CalendarConfig.GeneralConfig.ENABLE_NAV_LINKS_ON_DAY_NAMES,
-    editable: CalendarConfig.GeneralConfig.CALENDAR_IS_EDITABLE,
-    dayMaxEvents: CalendarConfig.GeneralConfig.COLLAPSE_EVENTS_TO_MORE_LINK,
+    initialDate: Config.GeneralConfig.INITIAL_DATE,
+    navLinks: Config.GeneralConfig.ENABLE_NAV_LINKS_ON_DAY_NAMES,
+    editable: Config.GeneralConfig.CALENDAR_IS_EDITABLE,
+    dayMaxEvents: Config.GeneralConfig.COLLAPSE_EVENTS_TO_MORE_LINK,
     events: getEvents(),
-    eventClick: renderPopup
+    eventClick: renderPopup,
+    ... getCalendarStyle()
   });
 }
 

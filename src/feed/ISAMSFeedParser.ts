@@ -85,7 +85,14 @@ export class ISAMSFeedParser {
       const month = dateParts[1];
       const year = dateParts[2];
 
-      const parsedTime = time ? `${time}+0` : ``;
+      /**
+       * TODO: Should the times in the calendar change depending on user's local time?
+       * 
+       * - To make the times adapt to local time, use '-7' after time below.
+       * - To keep times fixed, use '+0' instead below and add 'timeZone: Americas/Vancouver' 
+       *   to Calendar properties
+       */
+      const parsedTime = time ? `${time}-7` : ``;
 
       return `${month}-${day}-${year} ${parsedTime}`;
     }

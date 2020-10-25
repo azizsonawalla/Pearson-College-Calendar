@@ -15226,16 +15226,16 @@ function __classPrivateFieldSet(receiver, privateMap, value) {
 
 /***/ }),
 
-/***/ "./src/config/CalendarConfig.ts":
-/*!**************************************!*\
-  !*** ./src/config/CalendarConfig.ts ***!
-  \**************************************/
-/*! exports provided: CalendarConfig */
+/***/ "./src/config/Config.ts":
+/*!******************************!*\
+  !*** ./src/config/Config.ts ***!
+  \******************************/
+/*! exports provided: Config */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "CalendarConfig", function() { return CalendarConfig; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Config", function() { return Config; });
 /**
  * Configuration for the program.
  *
@@ -15243,11 +15243,11 @@ __webpack_require__.r(__webpack_exports__);
  * While most of these can be changed without worry, make sure to read the notes above each one and
  * understand the change that you are making.
  */
-var CalendarConfig = /** @class */ (function () {
-    function CalendarConfig() {
+var Config = /** @class */ (function () {
+    function Config() {
     }
     var _a, _b, _c;
-    CalendarConfig.GeneralConfig = (_a = /** @class */ (function () {
+    Config.GeneralConfig = (_a = /** @class */ (function () {
             function class_1() {
             }
             return class_1;
@@ -15279,7 +15279,7 @@ var CalendarConfig = /** @class */ (function () {
          */
         _a.COLLAPSE_EVENTS_TO_MORE_LINK = true,
         _a);
-    CalendarConfig.HeaderConfig = (_b = /** @class */ (function () {
+    Config.HeaderConfig = (_b = /** @class */ (function () {
             function class_2() {
             }
             return class_2;
@@ -15293,12 +15293,12 @@ var CalendarConfig = /** @class */ (function () {
          * To remove space between buttons, replace the space in the string below with a comma (,).
          * Eg. 'prev,next today' will remove the space between the left and right arrow buttons
          */
-        _b.LEFT_CONTROLS = 'prev next today',
+        _b.LEFT_CONTROLS = "prev next today",
         /**
          * Controls to show in the center of the header toolbar
          * title = name of the month/week/day currently being viewed
          */
-        _b.CENTER_CONTROLS = 'title',
+        _b.CENTER_CONTROLS = "title",
         /**
          * Controls to show on the right side of the header toolbar
          * dayGridMonth = a button to switch to month-view in grid style
@@ -15309,12 +15309,12 @@ var CalendarConfig = /** @class */ (function () {
          * To add space between buttons, replace the comma in the string below with a space (" ").
          * Eg. 'dayGridMonth timeGridWeek,timeGridDay,listWeek' will add a space between the first two buttons
          */
-        _b.RIGHT_CONTROLS = 'dayGridMonth timeGridWeek timeGridDay listWeek',
+        _b.RIGHT_CONTROLS = "dayGridMonth timeGridWeek timeGridDay listWeek",
         _b);
     /**
      * WARNING: Changing these without proper care will probably break the program!
      */
-    CalendarConfig.ImplementationConfig = (_c = /** @class */ (function () {
+    Config.ImplementationConfig = (_c = /** @class */ (function () {
             function class_3() {
             }
             return class_3;
@@ -15322,13 +15322,13 @@ var CalendarConfig = /** @class */ (function () {
         /**
          * The HTML id of the div in the DOM where the calendar should be inserted
          */
-        _c.CALENDAR_DIV_ID = 'calendar',
+        _c.CALENDAR_DIV_ID = "calendar",
         /**
          * The DOM event to bind the render function to.
          */
-        _c.EVENT_NAME_FOR_RENDER_LISTENER = 'DOMContentLoaded',
+        _c.EVENT_NAME_FOR_RENDER_LISTENER = "DOMContentLoaded",
         _c);
-    return CalendarConfig;
+    return Config;
 }());
 
 
@@ -15432,7 +15432,14 @@ var ISAMSFeedParser = /** @class */ (function () {
         var day = dateParts[0];
         var month = dateParts[1];
         var year = dateParts[2];
-        var parsedTime = time ? time + "+0" : "";
+        /**
+         * TODO: Should the times in the calendar change depending on user's local time?
+         *
+         * - To make the times adapt to local time, use '-7' after time below.
+         * - To keep times fixed, use '+0' instead below and add 'timeZone: Americas/Vancouver'
+         *   to Calendar properties
+         */
+        var parsedTime = time ? time + "-7" : "";
         return month + "-" + day + "-" + year + " " + parsedTime;
     };
     ISAMSFeedParser.getBooleanValueOfElementWithTag = function (element, tag) {
@@ -15502,7 +15509,7 @@ var TEST_FEED = '<?xml version="1.0" encoding="utf-8"?><iSAMS><iSAMS_CALENDARMAN
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _config_CalendarConfig__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./config/CalendarConfig */ "./src/config/CalendarConfig.ts");
+/* harmony import */ var _config_Config__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./config/Config */ "./src/config/Config.ts");
 /* harmony import */ var _render_RenderCalendar__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./render/RenderCalendar */ "./src/render/RenderCalendar.ts");
 /* harmony import */ var _style_main_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./style/main.css */ "./src/style/main.css");
 /* harmony import */ var _style_main_css__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_style_main_css__WEBPACK_IMPORTED_MODULE_2__);
@@ -15513,7 +15520,7 @@ __webpack_require__.r(__webpack_exports__);
  * Binds the rendering of the calendar to the configured DOM event
  */
 function addListenerToEvent() {
-    document.addEventListener(_config_CalendarConfig__WEBPACK_IMPORTED_MODULE_0__["CalendarConfig"].ImplementationConfig.EVENT_NAME_FOR_RENDER_LISTENER, _render_RenderCalendar__WEBPACK_IMPORTED_MODULE_1__["renderCalendar"]);
+    document.addEventListener(_config_Config__WEBPACK_IMPORTED_MODULE_0__["Config"].ImplementationConfig.EVENT_NAME_FOR_RENDER_LISTENER, _render_RenderCalendar__WEBPACK_IMPORTED_MODULE_1__["renderCalendar"]);
 }
 /**
  * Entry-point for rendering the calendar
@@ -15540,8 +15547,19 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _fullcalendar_list__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @fullcalendar/list */ "./node_modules/@fullcalendar/list/main.js");
 /* harmony import */ var _feed_ISAMSFeed__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../feed/ISAMSFeed */ "./src/feed/ISAMSFeed.ts");
 /* harmony import */ var _feed_ISAMSFeedParser__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../feed/ISAMSFeedParser */ "./src/feed/ISAMSFeedParser.ts");
-/* harmony import */ var _config_CalendarConfig__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../config/CalendarConfig */ "./src/config/CalendarConfig.ts");
+/* harmony import */ var _config_Config__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../config/Config */ "./src/config/Config.ts");
 /* harmony import */ var _RenderPopup__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./RenderPopup */ "./src/render/RenderPopup.ts");
+var __assign = (undefined && undefined.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
 
 
 
@@ -15555,7 +15573,7 @@ __webpack_require__.r(__webpack_exports__);
  * Grabs the reference to the div with id 'calendar' in the HTML DOM
  */
 function getCalendarHTMLElement() {
-    var calendarElement = document.getElementById(_config_CalendarConfig__WEBPACK_IMPORTED_MODULE_7__["CalendarConfig"].ImplementationConfig.CALENDAR_DIV_ID);
+    var calendarElement = document.getElementById(_config_Config__WEBPACK_IMPORTED_MODULE_7__["Config"].ImplementationConfig.CALENDAR_DIV_ID);
     if (!calendarElement) {
         throw new Error("Could not find Calendar element: HTML DOM needs to contain a div with id 'calendar'");
     }
@@ -15579,31 +15597,22 @@ function getPlugins() {
  */
 function getHeaderToolbarConfig() {
     return {
-        left: _config_CalendarConfig__WEBPACK_IMPORTED_MODULE_7__["CalendarConfig"].HeaderConfig.LEFT_CONTROLS,
-        center: _config_CalendarConfig__WEBPACK_IMPORTED_MODULE_7__["CalendarConfig"].HeaderConfig.CENTER_CONTROLS,
-        right: _config_CalendarConfig__WEBPACK_IMPORTED_MODULE_7__["CalendarConfig"].HeaderConfig.RIGHT_CONTROLS,
+        left: _config_Config__WEBPACK_IMPORTED_MODULE_7__["Config"].HeaderConfig.LEFT_CONTROLS,
+        center: _config_Config__WEBPACK_IMPORTED_MODULE_7__["Config"].HeaderConfig.CENTER_CONTROLS,
+        right: _config_Config__WEBPACK_IMPORTED_MODULE_7__["Config"].HeaderConfig.RIGHT_CONTROLS,
     };
+}
+function getCalendarStyle() {
+    // TODO
+    return {};
 }
 /**
  * Builds the Calendar object with the given configuration
- * @param calendarElement reference to the div element in the DOM where the calendar
- *                   will be rendered.
+ * @param calendarElement reference to the div element in the DOM
+ *                        where the calendar will be rendered.
  */
 function buildCalendarObject(calendarElement) {
-    /* TODO: tooltips  -https://fullcalendar.io/docs/event-tooltip-demo */
-    /* TODO: modals - https://www.w3schools.com/howto/howto_css_modals.asp */
-    return new _fullcalendar_core__WEBPACK_IMPORTED_MODULE_0__["Calendar"](calendarElement, {
-        timeZone: "America/Vancouver",
-        nowIndicator: true,
-        plugins: getPlugins(),
-        headerToolbar: getHeaderToolbarConfig(),
-        initialDate: _config_CalendarConfig__WEBPACK_IMPORTED_MODULE_7__["CalendarConfig"].GeneralConfig.INITIAL_DATE,
-        navLinks: _config_CalendarConfig__WEBPACK_IMPORTED_MODULE_7__["CalendarConfig"].GeneralConfig.ENABLE_NAV_LINKS_ON_DAY_NAMES,
-        editable: _config_CalendarConfig__WEBPACK_IMPORTED_MODULE_7__["CalendarConfig"].GeneralConfig.CALENDAR_IS_EDITABLE,
-        dayMaxEvents: _config_CalendarConfig__WEBPACK_IMPORTED_MODULE_7__["CalendarConfig"].GeneralConfig.COLLAPSE_EVENTS_TO_MORE_LINK,
-        events: getEvents(),
-        eventClick: _RenderPopup__WEBPACK_IMPORTED_MODULE_8__["renderPopup"]
-    });
+    return new _fullcalendar_core__WEBPACK_IMPORTED_MODULE_0__["Calendar"](calendarElement, __assign({ nowIndicator: true, plugins: getPlugins(), headerToolbar: getHeaderToolbarConfig(), initialDate: _config_Config__WEBPACK_IMPORTED_MODULE_7__["Config"].GeneralConfig.INITIAL_DATE, navLinks: _config_Config__WEBPACK_IMPORTED_MODULE_7__["Config"].GeneralConfig.ENABLE_NAV_LINKS_ON_DAY_NAMES, editable: _config_Config__WEBPACK_IMPORTED_MODULE_7__["Config"].GeneralConfig.CALENDAR_IS_EDITABLE, dayMaxEvents: _config_Config__WEBPACK_IMPORTED_MODULE_7__["Config"].GeneralConfig.COLLAPSE_EVENTS_TO_MORE_LINK, events: getEvents(), eventClick: _RenderPopup__WEBPACK_IMPORTED_MODULE_8__["renderPopup"] }, getCalendarStyle()));
 }
 /**
  * Renders the calendar
@@ -15628,24 +15637,54 @@ function renderCalendar() {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "renderPopup", function() { return renderPopup; });
 function renderPopup(arg) {
-    var modal = document.getElementById("myModal");
-    if (!modal)
-        return;
-    modal.style.display = "block";
+    // TODO: change ids
+    setModalText(arg.event);
+    addListenersIfNeeded();
+    showModal();
+}
+function setModalText(event) {
+    // TODO:
+}
+var listenersAdded = false;
+function addListenersIfNeeded() {
+    if (!listenersAdded) {
+        hideModalOnCloseClick();
+        hideModalOnOutsideClick();
+    }
+    listenersAdded = true;
+}
+function hideModalOnCloseClick() {
     // Get the <span> element that closes the modal
     var span = document.getElementsByClassName("close")[0];
+    if (!span) {
+        throw new Error("Could not find close button");
+    }
     // When the user clicks on <span> (x), close the modal
-    span.onclick = function () {
-        if (!modal)
-            return;
-        modal.style.display = "none";
-    };
+    span.onclick = hideModal;
+}
+function hideModalOnOutsideClick() {
     // When the user clicks anywhere outside of the modal, close it
     window.onclick = function (event) {
-        if (modal && event.target == modal) {
-            modal.style.display = "none";
+        if (getModal() && event.target == getModal()) {
+            hideModal();
         }
     };
+}
+function showModal() {
+    getModal().style.display = "block";
+}
+function hideModal() {
+    getModal().style.display = "none";
+}
+var modal;
+function getModal() {
+    if (!modal) {
+        modal = document.getElementById("popupModal");
+    }
+    if (!modal) {
+        throw new Error("Did not find modal");
+    }
+    return modal;
 }
 
 

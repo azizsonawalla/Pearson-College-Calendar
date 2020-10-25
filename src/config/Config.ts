@@ -1,14 +1,12 @@
 /**
  * Configuration for the program.
- * 
+ *
  * These are the 'knobs and dials' of the program extracted here for ease of tweaking and customizing.
- * While most of these can be changed without worry, make sure to read the notes above each one and 
- * understand the change that you are making. 
+ * While most of these can be changed without worry, make sure to read the notes above each one and
+ * understand the change that you are making.
  */
-export class CalendarConfig {
-
+export class Config {
   public static GeneralConfig = class {
-
     /**
      * The date that the calendar should open on to when
      * first started.
@@ -37,11 +35,9 @@ export class CalendarConfig {
      * make them all fit
      */
     public static COLLAPSE_EVENTS_TO_MORE_LINK: boolean = true;
-
   };
 
   public static HeaderConfig = class {
-
     /**
      * Controls to show on the left side in the header.
      * prev = previous button (left arrow)
@@ -51,13 +47,13 @@ export class CalendarConfig {
      * To remove space between buttons, replace the space in the string below with a comma (,).
      * Eg. 'prev,next today' will remove the space between the left and right arrow buttons
      */
-    public static LEFT_CONTROLS: string = 'prev next today';
+    public static LEFT_CONTROLS: string = "prev next today";
 
     /**
      * Controls to show in the center of the header toolbar
      * title = name of the month/week/day currently being viewed
      */
-    public static CENTER_CONTROLS: string = 'title';
+    public static CENTER_CONTROLS: string = "title";
 
     /**
      * Controls to show on the right side of the header toolbar
@@ -69,23 +65,22 @@ export class CalendarConfig {
      * To add space between buttons, replace the comma in the string below with a space (" ").
      * Eg. 'dayGridMonth timeGridWeek,timeGridDay,listWeek' will add a space between the first two buttons
      */
-    public static RIGHT_CONTROLS: string = 'dayGridMonth timeGridWeek timeGridDay listWeek';
-
+    public static RIGHT_CONTROLS: string =
+      "dayGridMonth timeGridWeek timeGridDay listWeek";
   };
 
   /**
    * WARNING: Changing these without proper care will probably break the program!
    */
   public static ImplementationConfig = class {
-
     /**
      * The HTML id of the div in the DOM where the calendar should be inserted
      */
-    public static CALENDAR_DIV_ID: string = 'calendar';
+    public static CALENDAR_DIV_ID: string = "calendar";
 
     /**
      * The DOM event to bind the render function to.
      */
-    public static EVENT_NAME_FOR_RENDER_LISTENER: string = 'DOMContentLoaded';
+    public static EVENT_NAME_FOR_RENDER_LISTENER: string = "DOMContentLoaded";
   };
 }
