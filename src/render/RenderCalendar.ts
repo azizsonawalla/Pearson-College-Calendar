@@ -7,7 +7,7 @@ import { PearsonCalendarEvent } from "../types/PearsonCalendarEvent";
 import { ISAMSFeed } from "../feed/ISAMSFeed";
 import { ISAMSFeedParser } from "../feed/ISAMSFeedParser";
 import { Config } from "../config/Config";
-import { renderPopup } from "./RenderPopup";
+import { getModalRenderer } from "./ModalRenderer";
 
 /**
  * Grabs the reference to the div with id 'calendar' in the HTML DOM
@@ -62,6 +62,7 @@ function getCalendarStyle(): {} {
  */
 function buildCalendarObject(calendarElement: HTMLElement): Calendar {
   return new Calendar(calendarElement, {
+    timeZone: 'Americas/Vancouver',
     nowIndicator: true,
     plugins: getPlugins(),
     headerToolbar: getHeaderToolbarConfig(),
@@ -70,7 +71,7 @@ function buildCalendarObject(calendarElement: HTMLElement): Calendar {
     editable: Config.GeneralConfig.CALENDAR_IS_EDITABLE,
     dayMaxEvents: Config.GeneralConfig.COLLAPSE_EVENTS_TO_MORE_LINK,
     events: getEvents(),
-    eventClick: renderPopup,
+    eventClick: getModalRenderer(),
     ... getCalendarStyle()
   });
 }

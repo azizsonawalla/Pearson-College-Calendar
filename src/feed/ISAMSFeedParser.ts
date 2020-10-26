@@ -87,12 +87,13 @@ export class ISAMSFeedParser {
 
       /**
        * TODO: Should the times in the calendar change depending on user's local time?
+       * Dynamic time might mess-up during daylight savings?
        * 
        * - To make the times adapt to local time, use '-7' after time below.
        * - To keep times fixed, use '+0' instead below and add 'timeZone: Americas/Vancouver' 
        *   to Calendar properties
        */
-      const parsedTime = time ? `${time}-7` : ``;
+      const parsedTime = time ? `${time}+0` : ``;
 
       return `${month}-${day}-${year} ${parsedTime}`;
     }

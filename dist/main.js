@@ -15434,12 +15434,13 @@ var ISAMSFeedParser = /** @class */ (function () {
         var year = dateParts[2];
         /**
          * TODO: Should the times in the calendar change depending on user's local time?
+         * Dynamic time might mess-up during daylight savings?
          *
          * - To make the times adapt to local time, use '-7' after time below.
          * - To keep times fixed, use '+0' instead below and add 'timeZone: Americas/Vancouver'
          *   to Calendar properties
          */
-        var parsedTime = time ? time + "-7" : "";
+        var parsedTime = time ? time + "+0" : "";
         return month + "-" + day + "-" + year + " " + parsedTime;
     };
     ISAMSFeedParser.getBooleanValueOfElementWithTag = function (element, tag) {
@@ -15513,6 +15514,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _render_RenderCalendar__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./render/RenderCalendar */ "./src/render/RenderCalendar.ts");
 /* harmony import */ var _style_main_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./style/main.css */ "./src/style/main.css");
 /* harmony import */ var _style_main_css__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_style_main_css__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _style_modal_css__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./style/modal.css */ "./src/style/modal.css");
+/* harmony import */ var _style_modal_css__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_style_modal_css__WEBPACK_IMPORTED_MODULE_3__);
+
 
 
 
@@ -15526,6 +15530,170 @@ function addListenerToEvent() {
  * Entry-point for rendering the calendar
  */
 addListenerToEvent();
+
+
+/***/ }),
+
+/***/ "./src/render/ModalRenderer.ts":
+/*!*************************************!*\
+  !*** ./src/render/ModalRenderer.ts ***!
+  \*************************************/
+/*! exports provided: getModalRenderer */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getModalRenderer", function() { return getModalRenderer; });
+var modal;
+function getModalRenderer() {
+    addListeners();
+    return renderModal;
+}
+function renderModal(arg) {
+    try {
+        // TODO: change ids
+        setModalText(arg.event);
+        showModal();
+    }
+    catch (e) {
+        console.log("Failed to render popup: " + e);
+    }
+}
+function setModalText(event) {
+    var _a, _b;
+    // TODO:
+    setModalTitle(event === null || event === void 0 ? void 0 : event.title);
+    setModalDate(event === null || event === void 0 ? void 0 : event.start, event === null || event === void 0 ? void 0 : event.end);
+    setModalTime(event === null || event === void 0 ? void 0 : event.start, event === null || event === void 0 ? void 0 : event.end, event === null || event === void 0 ? void 0 : event.allDay);
+    setModalLocation((_a = event === null || event === void 0 ? void 0 : event.extendedProps) === null || _a === void 0 ? void 0 : _a.location);
+    setModalCategory(event === null || event === void 0 ? void 0 : event.groupId);
+    setModalNotes((_b = event === null || event === void 0 ? void 0 : event.extendedProps) === null || _b === void 0 ? void 0 : _b.notes);
+}
+function setModalDate(start, end) {
+    var dateString;
+    if (start) {
+        if (end && end !== start) {
+            dateString = dateRangeToDateString(start, end);
+        }
+        else {
+            dateString = dateObjToDateString(start);
+        }
+    }
+    var dateNode = document.getElementById("date-prop");
+    if (!dateNode) {
+        throw new Error("Could not find date node");
+    }
+    dateNode.innerText = dateString || "-";
+}
+function dateRangeToDateString(start, end) {
+    return dateObjToDateString(start) + " to " + dateObjToDateString(end);
+}
+function dateObjToDateString(date) {
+    return date.toLocaleDateString("en-US", {
+        timeZone: 'America/Vancouver',
+        weekday: 'short',
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+    });
+}
+function setModalTime(start, end, allDay) {
+    var timeString;
+    if (start) {
+        if (allDay) {
+            timeString = "All day";
+        }
+        else if (end) {
+            timeString = dateRangeToTimeString(start, end);
+        }
+        else {
+            timeString = dateObjToTimeString(start);
+        }
+    }
+    var timeNode = document.getElementById("time-prop");
+    if (!timeNode) {
+        throw new Error("Could not find time node");
+    }
+    timeNode.innerText = timeString || "-";
+}
+function dateRangeToTimeString(start, end) {
+    return dateObjToTimeString(start) + "-" + dateObjToTimeString(end);
+}
+function dateObjToTimeString(date) {
+    var fullTime = date.toLocaleTimeString("en-US", {
+        timeZone: 'GMT' // the date object is timezone agnostic, so we fix it to GMT
+    });
+    return removeSecondsFromTimeString(fullTime);
+}
+function removeSecondsFromTimeString(time) {
+    var am = time.toLowerCase().indexOf("am") > 0;
+    var secondsRemoved = time.split(":").slice(0, 2).join(":");
+    return "" + secondsRemoved + (am ? "a" : "p");
+}
+function setModalLocation(location) {
+    var locationNode = document.getElementById("location-prop");
+    if (!locationNode) {
+        throw new Error("Could not find location node");
+    }
+    locationNode.innerText = location || "-";
+}
+function setModalCategory(category) {
+    var categoryNode = document.getElementById("category-prop");
+    if (!categoryNode) {
+        throw new Error("Could not find category node");
+    }
+    categoryNode.innerText = category || "-";
+}
+function setModalNotes(notes) {
+    var notesNode = document.getElementById("notes-prop");
+    if (!notesNode) {
+        throw new Error("Could not find notes node");
+    }
+    notesNode.innerText = notes || "-";
+}
+function setModalTitle(title) {
+    var titleNode = document.getElementById("modal-title");
+    if (!titleNode) {
+        throw new Error("Could not find title node");
+    }
+    titleNode.innerText = title;
+}
+function addListeners() {
+    hideModalOnCloseClick();
+    hideModalOnOutsideClick();
+}
+function hideModalOnCloseClick() {
+    // Get the <span> element that closes the modal
+    var span = document.getElementsByClassName("close")[0];
+    if (!span) {
+        throw new Error("Could not find close button");
+    }
+    // When the user clicks on <span> (x), close the modal
+    span.onclick = hideModal;
+}
+function hideModalOnOutsideClick() {
+    // When the user clicks anywhere outside of the modal, close it
+    window.onclick = function (event) {
+        if (getModal() && event.target == getModal()) {
+            hideModal();
+        }
+    };
+}
+function showModal() {
+    getModal().style.display = "block";
+}
+function hideModal() {
+    getModal().style.display = "none";
+}
+function getModal() {
+    if (!modal) {
+        modal = document.getElementById("popupModal");
+    }
+    if (!modal) {
+        throw new Error("Did not find modal");
+    }
+    return modal;
+}
 
 
 /***/ }),
@@ -15548,7 +15716,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _feed_ISAMSFeed__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../feed/ISAMSFeed */ "./src/feed/ISAMSFeed.ts");
 /* harmony import */ var _feed_ISAMSFeedParser__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../feed/ISAMSFeedParser */ "./src/feed/ISAMSFeedParser.ts");
 /* harmony import */ var _config_Config__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../config/Config */ "./src/config/Config.ts");
-/* harmony import */ var _RenderPopup__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./RenderPopup */ "./src/render/RenderPopup.ts");
+/* harmony import */ var _ModalRenderer__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./ModalRenderer */ "./src/render/ModalRenderer.ts");
 var __assign = (undefined && undefined.__assign) || function () {
     __assign = Object.assign || function(t) {
         for (var s, i = 1, n = arguments.length; i < n; i++) {
@@ -15612,7 +15780,7 @@ function getCalendarStyle() {
  *                        where the calendar will be rendered.
  */
 function buildCalendarObject(calendarElement) {
-    return new _fullcalendar_core__WEBPACK_IMPORTED_MODULE_0__["Calendar"](calendarElement, __assign({ nowIndicator: true, plugins: getPlugins(), headerToolbar: getHeaderToolbarConfig(), initialDate: _config_Config__WEBPACK_IMPORTED_MODULE_7__["Config"].GeneralConfig.INITIAL_DATE, navLinks: _config_Config__WEBPACK_IMPORTED_MODULE_7__["Config"].GeneralConfig.ENABLE_NAV_LINKS_ON_DAY_NAMES, editable: _config_Config__WEBPACK_IMPORTED_MODULE_7__["Config"].GeneralConfig.CALENDAR_IS_EDITABLE, dayMaxEvents: _config_Config__WEBPACK_IMPORTED_MODULE_7__["Config"].GeneralConfig.COLLAPSE_EVENTS_TO_MORE_LINK, events: getEvents(), eventClick: _RenderPopup__WEBPACK_IMPORTED_MODULE_8__["renderPopup"] }, getCalendarStyle()));
+    return new _fullcalendar_core__WEBPACK_IMPORTED_MODULE_0__["Calendar"](calendarElement, __assign({ timeZone: 'Americas/Vancouver', nowIndicator: true, plugins: getPlugins(), headerToolbar: getHeaderToolbarConfig(), initialDate: _config_Config__WEBPACK_IMPORTED_MODULE_7__["Config"].GeneralConfig.INITIAL_DATE, navLinks: _config_Config__WEBPACK_IMPORTED_MODULE_7__["Config"].GeneralConfig.ENABLE_NAV_LINKS_ON_DAY_NAMES, editable: _config_Config__WEBPACK_IMPORTED_MODULE_7__["Config"].GeneralConfig.CALENDAR_IS_EDITABLE, dayMaxEvents: _config_Config__WEBPACK_IMPORTED_MODULE_7__["Config"].GeneralConfig.COLLAPSE_EVENTS_TO_MORE_LINK, events: getEvents(), eventClick: Object(_ModalRenderer__WEBPACK_IMPORTED_MODULE_8__["getModalRenderer"])() }, getCalendarStyle()));
 }
 /**
  * Renders the calendar
@@ -15626,74 +15794,21 @@ function renderCalendar() {
 
 /***/ }),
 
-/***/ "./src/render/RenderPopup.ts":
-/*!***********************************!*\
-  !*** ./src/render/RenderPopup.ts ***!
-  \***********************************/
-/*! exports provided: renderPopup */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "renderPopup", function() { return renderPopup; });
-function renderPopup(arg) {
-    // TODO: change ids
-    setModalText(arg.event);
-    addListenersIfNeeded();
-    showModal();
-}
-function setModalText(event) {
-    // TODO:
-}
-var listenersAdded = false;
-function addListenersIfNeeded() {
-    if (!listenersAdded) {
-        hideModalOnCloseClick();
-        hideModalOnOutsideClick();
-    }
-    listenersAdded = true;
-}
-function hideModalOnCloseClick() {
-    // Get the <span> element that closes the modal
-    var span = document.getElementsByClassName("close")[0];
-    if (!span) {
-        throw new Error("Could not find close button");
-    }
-    // When the user clicks on <span> (x), close the modal
-    span.onclick = hideModal;
-}
-function hideModalOnOutsideClick() {
-    // When the user clicks anywhere outside of the modal, close it
-    window.onclick = function (event) {
-        if (getModal() && event.target == getModal()) {
-            hideModal();
-        }
-    };
-}
-function showModal() {
-    getModal().style.display = "block";
-}
-function hideModal() {
-    getModal().style.display = "none";
-}
-var modal;
-function getModal() {
-    if (!modal) {
-        modal = document.getElementById("popupModal");
-    }
-    if (!modal) {
-        throw new Error("Did not find modal");
-    }
-    return modal;
-}
-
-
-/***/ }),
-
 /***/ "./src/style/main.css":
 /*!****************************!*\
   !*** ./src/style/main.css ***!
   \****************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+// extracted by mini-css-extract-plugin
+
+/***/ }),
+
+/***/ "./src/style/modal.css":
+/*!*****************************!*\
+  !*** ./src/style/modal.css ***!
+  \*****************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
