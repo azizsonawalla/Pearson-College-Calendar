@@ -1,7 +1,8 @@
 import { Config } from "./config/Config";
-import { renderCalendar } from "./render/RenderCalendar";
+import { renderCalendar } from "./render/CalendarRenderer";
 import "./style/main.css";
 import "./style/modal.css"; 
+import "./style/loading-animation.css"; 
 
 /**
  * Binds the rendering of the calendar to the configured DOM event

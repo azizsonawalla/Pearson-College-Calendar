@@ -1,13 +1,21 @@
-import { Calendar, PluginDef, ToolbarInput } from "@fullcalendar/core";
+import { Calendar, EventInput, PluginDef, ToolbarInput } from "@fullcalendar/core";
 import interactionPlugin from "@fullcalendar/interaction";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import listPlugin from "@fullcalendar/list";
-import { PearsonCalendarEvent } from "../types/PearsonCalendarEvent";
 import { ISAMSFeed } from "../feed/ISAMSFeed";
 import { ISAMSFeedParser } from "../feed/ISAMSFeedParser";
 import { Config } from "../config/Config";
 import { getModalRenderer } from "./ModalRenderer";
+import { LoaderRenderer } from "./LoaderRenderer"
+
+interface FetchArgs {
+  start: Date;
+  end: Date;
+  startStr: string;
+  endStr: string;
+  timeZone: string;
+}
 
 /**
  * Grabs the reference to the div with id 'calendar' in the HTML DOM
@@ -27,9 +35,19 @@ function getCalendarHTMLElement(): HTMLElement {
 /**
  * Retrieves the events to render on the calendar
  */
-function getEvents(): PearsonCalendarEvent[] {
-  const xmlFeed: XMLDocument = ISAMSFeed.readLatest();
-  return ISAMSFeedParser.parse(xmlFeed);
+async function fetchEvents(arg: FetchArgs, success: any, failureCallback: any): Promise<EventInput[]> {
+  try {
+    LoaderRenderer.showLoading();
+    const xmlFeed: XMLDocument = await ISAMSFeed.read(arg.start, arg.end);
+    const events = ISAMSFeedParser.parse(xmlFeed);
+    success(events);
+    LoaderRenderer.hideLoading();
+    return Promise.resolve(events);
+  } catch (e) {
+    LoaderRenderer.showErrorMessage("Uh oh! Couldn't fetch calendar events.");
+    failureCallback();
+    return Promise.reject(e);
+  }
 }
 
 /**
@@ -62,7 +80,7 @@ function getCalendarStyle(): {} {
  */
 function buildCalendarObject(calendarElement: HTMLElement): Calendar {
   return new Calendar(calendarElement, {
-    timeZone: 'Americas/Vancouver',
+    timeZone: 'UTC',
     nowIndicator: true,
     plugins: getPlugins(),
     headerToolbar: getHeaderToolbarConfig(),
@@ -70,7 +88,7 @@ function buildCalendarObject(calendarElement: HTMLElement): Calendar {
     navLinks: Config.GeneralConfig.ENABLE_NAV_LINKS_ON_DAY_NAMES,
     editable: Config.GeneralConfig.CALENDAR_IS_EDITABLE,
     dayMaxEvents: Config.GeneralConfig.COLLAPSE_EVENTS_TO_MORE_LINK,
-    events: getEvents(),
+    events: fetchEvents,
     eventClick: getModalRenderer(),
     ... getCalendarStyle()
   });

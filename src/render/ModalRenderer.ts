@@ -9,7 +9,6 @@ export function getModalRenderer(): {(arg: EventClickArg): void} {
 
 function renderModal(arg: EventClickArg) {
     try {
-        // TODO: change ids
         setModalText(arg.event);
         showModal();
     } catch (e) {
@@ -18,7 +17,6 @@ function renderModal(arg: EventClickArg) {
 }
 
 function setModalText(event: EventApi) {
-    // TODO:
     setModalTitle(event?.title);
     setModalDate(event?.start, event?.end);
     setModalTime(event?.start, event?.end, event?.allDay);
@@ -50,7 +48,7 @@ function dateRangeToDateString(start: Date, end: Date): string {
 function dateObjToDateString(date: Date): string {
     return date.toLocaleDateString(
         "en-US", {
-            timeZone: 'America/Vancouver', 
+            timeZone: 'UTC', 
             weekday: 'short',
             year: 'numeric',
             month: 'short',
@@ -85,7 +83,7 @@ function dateObjToTimeString(date: Date): string {
     const fullTime = date.toLocaleTimeString(
         "en-US",
         {
-            timeZone: 'GMT'   // the date object is timezone agnostic, so we fix it to GMT
+            timeZone: 'UTC'   // the date object is timezone agnostic, so we fix it to UTC
         }
     );
     return removeSecondsFromTimeString(fullTime);

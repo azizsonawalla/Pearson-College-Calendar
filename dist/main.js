@@ -15345,16 +15345,109 @@ var Config = /** @class */ (function () {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ISAMSFeed", function() { return ISAMSFeed; });
-/* harmony import */ var _testFeed__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./testFeed */ "./src/feed/testFeed.ts");
-
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (undefined && undefined.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (_) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
 var ISAMSFeed = /** @class */ (function () {
     function ISAMSFeed() {
     }
-    ISAMSFeed.readLatest = function () {
-        // TODO: workaround from local file for now
-        // get feed from isams
-        return new DOMParser().parseFromString(_testFeed__WEBPACK_IMPORTED_MODULE_0__["TEST_FEED"], "text/xml");
+    ISAMSFeed.read = function (start, end) {
+        return __awaiter(this, void 0, void 0, function () {
+            var queryUrl;
+            return __generator(this, function (_a) {
+                queryUrl = this.buildQueryUrl(start, end);
+                console.log("Querying " + queryUrl);
+                // return this.fetchFromUrl(queryUrl)
+                // .catch(e => {
+                //     console.warn(`Fetch from primary url failed: ${e}`);
+                //     console.info(`Fetching from proxy`);
+                //     return this.fetchFromUrlViaProxy(queryUrl);
+                // });
+                return [2 /*return*/, this.fetchFromUrlViaProxy(queryUrl)];
+            });
+        });
     };
+    ISAMSFeed.buildQueryUrl = function (start, end) {
+        var queryUrl = this.PRIMARY_HOST;
+        if (start || end) {
+            queryUrl += "?";
+        }
+        if (start) {
+            queryUrl += "date=" + start.toLocaleDateString('en-GB');
+            if (end) {
+                queryUrl += "&";
+            }
+        }
+        if (end) {
+            queryUrl += "endDate=" + end.toLocaleDateString('en-GB');
+        }
+        return queryUrl;
+    };
+    ISAMSFeed.fetchFromUrl = function (queryUrl) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2 /*return*/, new Promise(function (resolve, reject) {
+                        var req = new XMLHttpRequest();
+                        req.onreadystatechange = function () {
+                            if (req.readyState === 4 && req.status === 200) {
+                                resolve(new DOMParser().parseFromString(req.responseText, "text/xml"));
+                                return;
+                            }
+                            else if (req.readyState === 4 && req.status !== 200) {
+                                reject("Request to feed failed: " + req.responseText);
+                                return;
+                            }
+                        };
+                        req.open('GET', queryUrl, true);
+                        req.send();
+                    })];
+            });
+        });
+    };
+    ISAMSFeed.fetchFromUrlViaProxy = function (queryUrl) {
+        return __awaiter(this, void 0, void 0, function () {
+            var proxyUrl;
+            return __generator(this, function (_a) {
+                proxyUrl = this.CORS_PROXY + "/" + queryUrl;
+                return [2 /*return*/, this.fetchFromUrl(proxyUrl)];
+            });
+        });
+    };
+    ISAMSFeed.PRIMARY_HOST = "https://isams.pearsoncollege.ca/system/api/feeds/calendar.ashx";
+    ISAMSFeed.CORS_PROXY = "https://cors-anywhere.herokuapp.com";
     return ISAMSFeed;
 }());
 
@@ -15480,27 +15573,6 @@ var ISAMSFeedParser = /** @class */ (function () {
 
 /***/ }),
 
-/***/ "./src/feed/testFeed.ts":
-/*!******************************!*\
-  !*** ./src/feed/testFeed.ts ***!
-  \******************************/
-/*! exports provided: TEST_FEED */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "TEST_FEED", function() { return TEST_FEED; });
-var TEST_FEED = '<?xml version="1.0" encoding="utf-8"?><iSAMS><iSAMS_CALENDARMANAGER><event><id>4</id><startdate>15/05/2019</startdate><alldayevent>true</alldayevent><description>ISAMS Training Again</description><category>Whole College Event</category><submitby>geoff.grieveson</submitby><submitdate>15/05/2020</submitdate></event><event><id>5</id><startdate>22/05/2019</startdate><alldayevent>true</alldayevent><description>ISAMS Training Again</description><category>Whole College Event</category><submitby>geoff.grieveson</submitby><submitdate>15/05/2020</submitdate></event><event><id>6</id><startdate>29/05/2019</startdate><alldayevent>true</alldayevent><description>ISAMS Training Again</description><category>Whole College Event</category><submitby>geoff.grieveson</submitby><submitdate>15/05/2020</submitdate></event><event><id>7</id><startdate>05/06/2019</startdate><alldayevent>true</alldayevent><description>ISAMS Training Again</description><category>Whole College Event</category><submitby>geoff.grieveson</submitby><submitdate>15/05/2020</submitdate></event><event><id>8</id><startdate>12/06/2019</startdate><alldayevent>true</alldayevent><description>ISAMS Training Again</description><category>Whole College Event</category><submitby>geoff.grieveson</submitby><submitdate>15/05/2020</submitdate></event><event><id>1</id><startdate>15/05/2020</startdate><alldayevent>true</alldayevent><description>isams training</description><category>Whole College Event</category><submitby>geoff.grieveson</submitby><submitdate>15/05/2020</submitdate></event><event><id>2</id><startdate>15/05/2020</startdate><alldayevent>true</alldayevent><description>isams training - calendar manager</description><category>Whole College Event</category><submitby>geoff.grieveson</submitby><submitdate>15/05/2020</submitdate></event><event><id>10</id><startdate>24/08/2020</startdate><alldayevent>true</alldayevent><description>Y46 &amp; Y47 Students Arrive </description><category>Whole College Event</category><submitby>ecoolidge</submitby><submitdate>05/08/2020</submitdate></event><event><id>12</id><startdate>24/08/2020</startdate><alldayevent>true</alldayevent><description>Quarientation</description><category>Whole College Event</category><location>Hotel Grand Pacific, Victoria BC</location><submitby>ecoolidge</submitby><submitdate>05/08/2020</submitdate></event><event><id>294</id><startdate>24/08/2020</startdate><alldayevent>false</alldayevent><starttime>09:50</starttime><endtime>10:50</endtime><description>Test Event</description><category>Staff</category><notes>Exporting to Outlook</notes><submitby>danderson</submitby><submitdate>28/08/2020</submitdate></event><event><id>276</id><startdate>24/08/2020</startdate><alldayevent>false</alldayevent><starttime>19:00</starttime><endtime>21:00</endtime><description>Term 1 Recital/Winter Concert on campus</description><category>Whole College Event</category><submitby>ecoolidge</submitby><submitdate>24/08/2020</submitdate></event><event><id>13</id><startdate>25/08/2020</startdate><alldayevent>true</alldayevent><description>Quarientation</description><category>Whole College Event</category><location>Hotel Grand Pacific, Victoria BC</location><submitby>ecoolidge</submitby><submitdate>05/08/2020</submitdate></event><event><id>14</id><startdate>26/08/2020</startdate><alldayevent>true</alldayevent><description>Quarientation</description><category>Whole College Event</category><location>Hotel Grand Pacific, Victoria BC</location><submitby>ecoolidge</submitby><submitdate>05/08/2020</submitdate></event><event><id>213</id><startdate>26/08/2020</startdate><alldayevent>true</alldayevent><description>EE First Draft to Supervisors</description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>24/08/2020</submitdate></event><event><id>15</id><startdate>27/08/2020</startdate><alldayevent>true</alldayevent><description>Quarientation</description><category>Whole College Event</category><location>Hotel Grand Pacific, Victoria BC</location><submitby>ecoolidge</submitby><submitdate>05/08/2020</submitdate></event><event><id>16</id><startdate>28/08/2020</startdate><alldayevent>true</alldayevent><description>Quarientation</description><category>Whole College Event</category><location>Hotel Grand Pacific, Victoria BC</location><submitby>ecoolidge</submitby><submitdate>05/08/2020</submitdate></event><event><id>17</id><startdate>29/08/2020</startdate><alldayevent>true</alldayevent><description>Quarientation</description><category>Whole College Event</category><location>Hotel Grand Pacific, Victoria BC</location><submitby>ecoolidge</submitby><submitdate>05/08/2020</submitdate></event><event><id>18</id><startdate>30/08/2020</startdate><alldayevent>true</alldayevent><description>Quarientation</description><category>Whole College Event</category><location>Hotel Grand Pacific, Victoria BC</location><submitby>ecoolidge</submitby><submitdate>05/08/2020</submitdate></event><event><id>19</id><startdate>31/08/2020</startdate><alldayevent>true</alldayevent><description>Quarientation</description><category>Whole College Event</category><location>Hotel Grand Pacific, Victoria BC</location><submitby>ecoolidge</submitby><submitdate>05/08/2020</submitdate></event><event><id>20</id><startdate>01/09/2020</startdate><alldayevent>true</alldayevent><description>Quarientation</description><category>Whole College Event</category><location>Hotel Grand Pacific, Victoria BC</location><submitby>ecoolidge</submitby><submitdate>05/08/2020</submitdate></event><event><id>21</id><startdate>02/09/2020</startdate><alldayevent>true</alldayevent><description>Quarientation</description><category>Whole College Event</category><location>Hotel Grand Pacific, Victoria BC</location><submitby>ecoolidge</submitby><submitdate>05/08/2020</submitdate></event><event><id>22</id><startdate>03/09/2020</startdate><alldayevent>true</alldayevent><description>Quarientation</description><category>Whole College Event</category><location>Hotel Grand Pacific, Victoria BC</location><submitby>ecoolidge</submitby><submitdate>05/08/2020</submitdate></event><event><id>23</id><startdate>04/09/2020</startdate><alldayevent>true</alldayevent><description>Quarientation</description><category>Whole College Event</category><location>Hotel Grand Pacific, Victoria BC</location><submitby>ecoolidge</submitby><submitdate>05/08/2020</submitdate></event><event><id>24</id><startdate>05/09/2020</startdate><alldayevent>true</alldayevent><description>Quarientation</description><category>Whole College Event</category><location>Hotel Grand Pacific, Victoria BC</location><submitby>ecoolidge</submitby><submitdate>05/08/2020</submitdate></event><event><id>296</id><startdate>05/09/2020</startdate><alldayevent>false</alldayevent><starttime>10:30</starttime><endtime>12:00</endtime><description>Virtual Visit - Applying to Oxford or Cambridge</description><category>Student Life</category><notes>Alumni Merit Flugler is speaking about applying to Oxford or Cambridge</notes><submitby>dgrunder</submitby><submitdate>04/09/2020</submitdate></event><event><id>25</id><startdate>06/09/2020</startdate><alldayevent>true</alldayevent><description>Quarientation</description><category>Whole College Event</category><location>Hotel Grand Pacific, Victoria BC</location><submitby>ecoolidge</submitby><submitdate>05/08/2020</submitdate></event><event><id>26</id><startdate>07/09/2020</startdate><alldayevent>true</alldayevent><description>Student move to campus</description><category>Whole College Event</category><submitby>ecoolidge</submitby><submitdate>05/08/2020</submitdate></event><event><id>27</id><startdate>07/09/2020</startdate><alldayevent>true</alldayevent><description>On Campus Orientation</description><category>Whole College Event</category><submitby>ecoolidge</submitby><submitdate>05/08/2020</submitdate></event><event><id>61</id><startdate>07/09/2020</startdate><alldayevent>true</alldayevent><description>Labour Day - Holiday </description><category>Staff</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>28</id><startdate>08/09/2020</startdate><alldayevent>true</alldayevent><description>On Campus Orientation</description><category>Whole College Event</category><submitby>ecoolidge</submitby><submitdate>05/08/2020</submitdate></event><event><id>29</id><startdate>09/09/2020</startdate><alldayevent>true</alldayevent><description>On Campus Orientation</description><category>Whole College Event</category><submitby>ecoolidge</submitby><submitdate>05/08/2020</submitdate></event><event><id>30</id><startdate>10/09/2020</startdate><alldayevent>true</alldayevent><description>On Campus Orientation</description><category>Whole College Event</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>31</id><startdate>11/09/2020</startdate><alldayevent>true</alldayevent><description>First day of class (ABCDEF)</description><category>Whole College Event</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>32</id><startdate>13/09/2020</startdate><alldayevent>false</alldayevent><starttime>19:30</starttime><endtime>20:30</endtime><description>House Time</description><category>Residential Life</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>190</id><startdate>14/09/2020</startdate><alldayevent>true</alldayevent><description>Day 1 (ABC)</description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>214</id><startdate>14/09/2020</startdate><alldayevent>false</alldayevent><starttime>19:30</starttime><endtime>21:00</endtime><description>Choir</description><category>Student Life</category><submitby>ecoolidge</submitby><submitdate>24/08/2020</submitdate></event><event><id>191</id><startdate>15/09/2020</startdate><alldayevent>true</alldayevent><description>' +
-    'Day 2 (DEF)</description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>80</id><startdate>15/09/2020</startdate><alldayevent>false</alldayevent><starttime>16:00</starttime><endtime>16:45</endtime><description>Advisor Time</description><category>Residential Life</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>139</id><startdate>15/09/2020</startdate><alldayevent>false</alldayevent><starttime>19:30</starttime><endtime>21:00</endtime><description>Student Clubs</description><category>Student Life</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>69</id><startdate>16/09/2020</startdate><alldayevent>false</alldayevent><starttime>08:30</starttime><endtime>10:30</endtime><description>Village Gathering</description><category>Whole College Event</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>177</id><startdate>16/09/2020</startdate><alldayevent>false</alldayevent><starttime>10:45</starttime><endtime>13:30</endtime><description>TOK Y2 Writing Workshop</description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>192</id><startdate>17/09/2020</startdate><alldayevent>true</alldayevent><description>Day 1 (ABC)</description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>81</id><startdate>17/09/2020</startdate><alldayevent>false</alldayevent><starttime>16:00</starttime><endtime>16:45</endtime><description>Advisor Time</description><category>Residential Life</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>180</id><startdate>17/09/2020</startdate><alldayevent>false</alldayevent><starttime>19:30</starttime><endtime>21:00</endtime><description>Student Organized Events</description><category>Student Life</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>193</id><startdate>18/09/2020</startdate><alldayevent>true</alldayevent><description>Day 2 (DEF) </description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>129</id><startdate>18/09/2020</startdate><alldayevent>false</alldayevent><starttime>16:00</starttime><endtime>17:30</endtime><description>Student Clubs</description><category>Student Life</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>116</id><startdate>20/09/2020</startdate><alldayevent>false</alldayevent><starttime>10:00</starttime><endtime>11:00</endtime><description>Fitness</description><category>Student Life</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>33</id><startdate>20/09/2020</startdate><alldayevent>false</alldayevent><starttime>19:30</starttime><endtime>20:30</endtime><description>House Time</description><category>Residential Life</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>46</id><startdate>21/09/2020</startdate><alldayevent>true</alldayevent><description>UWC Day - Special Programming</description><category>Whole College Event</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>194</id><startdate>22/09/2020</startdate><alldayevent>true</alldayevent><description>Day 4 (EFD)</description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>82</id><startdate>22/09/2020</startdate><alldayevent>false</alldayevent><starttime>16:00</starttime><endtime>16:45</endtime><description>Advisor Time</description><category>Residential Life</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>140</id><startdate>22/09/2020</startdate><alldayevent>false</alldayevent><starttime>19:30</starttime><endtime>21:00</endtime><description>Student Clubs</description><category>Student Life</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>76</id><startdate>23/09/2020</startdate><alldayevent>false</alldayevent><starttime>08:30</starttime><endtime>10:30</endtime><description>Faculty Meeting</description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>178</id><startdate>23/09/2020</startdate><alldayevent>false</alldayevent><starttime>10:45</starttime><endtime>13:30</endtime><description>TOK Y2 Writing Workshop</description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>49</id><startdate>23/09/2020</startdate><alldayevent>false</alldayevent><starttime>13:45</starttime><endtime>15:45</endtime><description>Activities </description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>195</id><startdate>24/09/2020</startdate><alldayevent>true</alldayevent><description>Day 3 (BCA)</description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>83</id><startdate>24/09/2020</startdate><alldayevent>false</alldayevent><starttime>16:00</starttime><endtime>16:45</endtime><description>Advisor Time</description><category>Residential Life</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>181</id><startdate>24/09/2020</startdate><alldayevent>false</alldayevent><starttime>19:30</starttime><endtime>21:00</endtime><description>Student Organized Events</description><category>Student Life</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>196</id><startdate>25/09/2020</startdate><alldayevent>true</alldayevent><description>Day 4 (EFD)</description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>210</id><startdate>25/09/2020</startdate><alldayevent>true</alldayevent><description>Y2 Course Level Confirmation</description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>24/08/2020</submitdate></event><event><id>130</id><startdate>25/09/2020</startdate><alldayevent>false</alldayevent><starttime>16:00</starttime><endtime>17:30</endtime><description>Student Clubs</description><category>Student Life</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>155</id><startdate>26/09/2020</startdate><alldayevent>false</alldayevent><starttime>08:00</starttime><endtime>13:00</endtime><description>SAT</description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>117</id><startdate>27/09/2020</startdate><alldayevent>false</alldayevent><starttime>10:00</starttime><endtime>11:00</endtime><description>Fitness</description><category>Student Life</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>34</id><startdate>27/09/2020</startdate><alldayevent>false</alldayevent><starttime>19:30</starttime><endtime>20:30</endtime><description>House Time</description><category>Residential Life</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>197</id><startdate>28/09/2020</startdate><alldayevent>true</alldayevent><description>Day 5 (CAB)</description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>24/08/2020</submitdate></event><event><id>201</id><startdate>28/09/2020</startdate><alldayevent>true</alldayevent><description>Y2 Assessments (Gr 2,4,6)</description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>24/08/2020</submitdate></event><event><id>216</id><startdate>28/09/2020</startdate><alldayevent>false</alldayevent><starttime>19:30</starttime><endtime>21:00</endtime><description>Choir</description><category>Student Life</category><submitby>ecoolidge</submitby><submitdate>24/08/2020</submitdate></event><event><id>198</id><startdate>29/09/2020</startdate><alldayevent>true</alldayevent><description>Day 6 (FDE)</description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>24/08/2020</submitdate></event><event><id>202</id><startdate>29/09/2020</startdate><alldayevent>true</alldayevent><description>Y2 Assessments (Gr 2,4,6)</description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>24/08/2020</submitdate></event><event><id>84</id><startdate>29/09/2020</startdate><alldayevent>false</alldayevent><starttime>16:00</starttime><endtime>16:45</endtime><description>Advisor Time</description><category>Residential Life</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>141</id><startdate>29/09/2020</startdate><alldayevent>false</alldayevent><starttime>19:30</starttime><endtime>21:00</endtime><description>Student Clubs</description><category>Student Life</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>175</id><startdate>30/09/2020</startdate><alldayevent>true</alldayevent><description>Y46 Self-Taught Oral Exams</description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>73</id><startdate>30/09/2020</startdate><alldayevent>false</alldayevent><starttime>08:30</starttime><endtime>10:30</endtime><description>Global Affairs</description><category>Whole College Event</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>179</id><startdate>30/09/2020</startdate><alldayevent>false</alldayevent><starttime>10:45</starttime><endtime>13:30</endtime><description>TOK Y2 Writing Workshop</description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate>' +
-    '</event><event><id>50</id><startdate>30/09/2020</startdate><alldayevent>false</alldayevent><starttime>13:45</starttime><endtime>15:45</endtime><description>Activities </description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>152</id><startdate>30/09/2020</startdate><alldayevent>false</alldayevent><starttime>19:30</starttime><endtime>21:30</endtime><description>Consent Evening</description><category>Residential Life</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>199</id><startdate>01/10/2020</startdate><alldayevent>true</alldayevent><description>Day 5 (CAB)</description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>24/08/2020</submitdate></event><event><id>85</id><startdate>01/10/2020</startdate><alldayevent>false</alldayevent><starttime>16:00</starttime><endtime>16:45</endtime><description>Advisor Time</description><category>Residential Life</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>182</id><startdate>01/10/2020</startdate><alldayevent>false</alldayevent><starttime>19:30</starttime><endtime>21:00</endtime><description>Student Organized Events</description><category>Student Life</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>200</id><startdate>02/10/2020</startdate><alldayevent>true</alldayevent><description>Day 6 (FDE)</description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>24/08/2020</submitdate></event><event><id>225</id><startdate>02/10/2020</startdate><alldayevent>true</alldayevent><description>EE Check In</description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>24/08/2020</submitdate></event><event><id>131</id><startdate>02/10/2020</startdate><alldayevent>false</alldayevent><starttime>16:00</starttime><endtime>17:30</endtime><description>Student Clubs</description><category>Student Life</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>156</id><startdate>03/10/2020</startdate><alldayevent>false</alldayevent><starttime>08:00</starttime><endtime>13:00</endtime><description>SAT</description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>118</id><startdate>04/10/2020</startdate><alldayevent>false</alldayevent><starttime>10:00</starttime><endtime>11:00</endtime><description>Fitness</description><category>Student Life</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>35</id><startdate>04/10/2020</startdate><alldayevent>false</alldayevent><starttime>19:30</starttime><endtime>20:30</endtime><description>House Time</description><category>Residential Life</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>203</id><startdate>05/10/2020</startdate><alldayevent>true</alldayevent><description>Y2 Assessments (Gr 1,3,5)</description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>24/08/2020</submitdate></event><event><id>205</id><startdate>05/10/2020</startdate><alldayevent>true</alldayevent><description>Day 1 (ABC)</description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>24/08/2020</submitdate></event><event><id>217</id><startdate>05/10/2020</startdate><alldayevent>false</alldayevent><starttime>19:30</starttime><endtime>21:00</endtime><description>Choir</description><category>Student Life</category><submitby>ecoolidge</submitby><submitdate>24/08/2020</submitdate></event><event><id>204</id><startdate>06/10/2020</startdate><alldayevent>true</alldayevent><description>Y2 Assessments (Gr 1,3,5)</description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>24/08/2020</submitdate></event><event><id>206</id><startdate>06/10/2020</startdate><alldayevent>true</alldayevent><description>Day 2 (DEF)</description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>24/08/2020</submitdate></event><event><id>86</id><startdate>06/10/2020</startdate><alldayevent>false</alldayevent><starttime>16:00</starttime><endtime>16:45</endtime><description>Advisor Time</description><category>Residential Life</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>142</id><startdate>06/10/2020</startdate><alldayevent>false</alldayevent><starttime>19:30</starttime><endtime>21:00</endtime><description>Student Clubs</description><category>Student Life</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>176</id><startdate>07/10/2020</startdate><alldayevent>true</alldayevent><description>Y46 Self-Taught Oral Exams</description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>70</id><startdate>07/10/2020</startdate><alldayevent>false</alldayevent><starttime>08:30</starttime><endtime>10:30</endtime><description>Village Gathering</description><category>Whole College Event</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>106</id><startdate>07/10/2020</startdate><alldayevent>false</alldayevent><starttime>10:45</starttime><endtime>13:30</endtime><description>TOK Y1/Y2</description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>51</id><startdate>07/10/2020</startdate><alldayevent>false</alldayevent><starttime>13:45</starttime><endtime>15:45</endtime><description>Activities </description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>207</id><startdate>08/10/2020</startdate><alldayevent>true</alldayevent><description>Day 1 (ABC)</description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>24/08/2020</submitdate></event><event><id>87</id><startdate>08/10/2020</startdate><alldayevent>false</alldayevent><starttime>16:00</starttime><endtime>16:45</endtime><description>Advisor Time</description><category>Residential Life</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>183</id><startdate>08/10/2020</startdate><alldayevent>false</alldayevent><starttime>19:30</starttime><endtime>21:00</endtime><description>Student Organized Events</description><category>Student Life</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>208</id><startdate>09/10/2020</startdate><alldayevent>true</alldayevent><description>Day 2 (DEF)</description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>24/08/2020</submitdate></event><event><id>212</id><startdate>09/10/2020</startdate><alldayevent>true</alldayevent><description>Y1 Course/Activity Change Deadline</description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>24/08/2020</submitdate></event><event><id>132</id><startdate>09/10/2020</startdate><alldayevent>false</alldayevent><starttime>16:00</starttime><endtime>17:30</endtime><description>Student Clubs</description><category>Student Life</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>211</id><startdate>09/10/2020</startdate><alldayevent>false</alldayevent><starttime>16:00</starttime><endtime>16:45</endtime><description>IB Course Confirmation</description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>24/08/2020</submitdate></event><event><id>159</id><startdate>10/10/2020</startdate><alldayevent>true</alldayevent><description>Cultural Sharing Day - Show who you are! </description><category>Student Life</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>119</id><startdate>11/10/2020</startdate><alldayevent>false</alldayevent><starttime>10:00</starttime><endtime>11:00</endtime><description>Fitness</description><category>Student Life</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>36</id><startdate>11/10/2020</startdate><alldayevent>false</alldayevent><starttime>19:30</starttime><endtime>20:30</endtime><description>House Time</description><category>Residential Life</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>62</id><startdate>12/10/2020</startdate><alldayevent>true</alldayevent><description>Thanksgiving Holiday</description><category>Staff</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>64</id><startdate>13/10/2020</startdate><alldayevent>true</alldayevent><description>Service Week </description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>65</id><startdate>14/10/2020</startdate><alldayevent>true</alldayevent><description>Service Week </description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>174</id><startdate>14/10/2020</startdate><alldayevent>true</alldayevent><description>Y2 PG Update</description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>66</id><startdate>15/10/2020</startdate><alldayevent>true</alldayevent><description>Service Week </description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>307</id><startdate>15/10/2020</startdate><alldayevent>false</alldayevent><starttime>20:30</starttime><endtime>21:30</endtime><description>Colo(u)r Core</description><category>Whole College Event</category><location>Max Bell Theatre</location><submitby>agatari</submitby><submitdate>14/10/2020</submitdate></event><event><id>67</id><startdate>16/10/2020</startdate><alldayevent>true</alldayevent>' +
-    '<description>Service Week </description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>68</id><startdate>17/10/2020</startdate><alldayevent>true</alldayevent><description>Service Week </description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>120</id><startdate>18/10/2020</startdate><alldayevent>false</alldayevent><starttime>10:00</starttime><endtime>11:00</endtime><description>Fitness</description><category>Student Life</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>37</id><startdate>18/10/2020</startdate><alldayevent>false</alldayevent><starttime>19:30</starttime><endtime>20:30</endtime><description>House Time</description><category>Residential Life</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>229</id><startdate>19/10/2020</startdate><alldayevent>true</alldayevent><description>Day 3 (BCA)</description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>24/08/2020</submitdate></event><event><id>309</id><startdate>19/10/2020</startdate><alldayevent>true</alldayevent><description>test event</description><category>Academic</category><location>Max Bell 101</location><notes>test</notes><submitby>AS</submitby><submitdate>19/10/2020</submitdate></event><event><id>219</id><startdate>19/10/2020</startdate><alldayevent>false</alldayevent><starttime>19:30</starttime><endtime>21:00</endtime><description>Choir</description><category>Student Life</category><submitby>ecoolidge</submitby><submitdate>24/08/2020</submitdate></event><event><id>230</id><startdate>20/10/2020</startdate><alldayevent>true</alldayevent><description>Day 4 (EFD)</description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>24/08/2020</submitdate></event><event><id>90</id><startdate>20/10/2020</startdate><alldayevent>false</alldayevent><starttime>16:00</starttime><endtime>16:45</endtime><description>Advisor Time</description><category>Residential Life</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>144</id><startdate>20/10/2020</startdate><alldayevent>false</alldayevent><starttime>19:30</starttime><endtime>21:00</endtime><description>Student Clubs</description><category>Student Life</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>77</id><startdate>21/10/2020</startdate><alldayevent>false</alldayevent><starttime>08:30</starttime><endtime>10:30</endtime><description>Faculty Meeting</description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>108</id><startdate>21/10/2020</startdate><alldayevent>false</alldayevent><starttime>10:45</starttime><endtime>13:30</endtime><description>TOK Y1/Y2</description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>53</id><startdate>21/10/2020</startdate><alldayevent>false</alldayevent><starttime>13:45</starttime><endtime>15:45</endtime><description>Activities </description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>231</id><startdate>22/10/2020</startdate><alldayevent>true</alldayevent><description>Day 3 (BCA)</description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>24/08/2020</submitdate></event><event><id>91</id><startdate>22/10/2020</startdate><alldayevent>false</alldayevent><starttime>16:00</starttime><endtime>16:45</endtime><description>Advisor Time</description><category>Residential Life</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>185</id><startdate>22/10/2020</startdate><alldayevent>false</alldayevent><starttime>19:30</starttime><endtime>21:00</endtime><description>Student Organized Events</description><category>Student Life</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>232</id><startdate>23/10/2020</startdate><alldayevent>true</alldayevent><description>Day 4 (EFD)</description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>24/08/2020</submitdate></event><event><id>308</id><startdate>23/10/2020</startdate><alldayevent>false</alldayevent><starttime>10:15</starttime><endtime>10:45</endtime><description>Great BC Shakedown - EQ Drill </description><category>Whole College Event</category><submitby>ecoolidge</submitby><submitdate>15/10/2020</submitdate></event><event><id>134</id><startdate>23/10/2020</startdate><alldayevent>false</alldayevent><starttime>16:00</starttime><endtime>17:30</endtime><description>Student Clubs</description><category>Student Life</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>121</id><startdate>25/10/2020</startdate><alldayevent>false</alldayevent><starttime>10:00</starttime><endtime>11:00</endtime><description>Fitness</description><category>Student Life</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>38</id><startdate>25/10/2020</startdate><alldayevent>false</alldayevent><starttime>19:30</starttime><endtime>20:30</endtime><description>House Time</description><category>Residential Life</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>233</id><startdate>26/10/2020</startdate><alldayevent>true</alldayevent><description>Day 5 (CAB)</description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>24/08/2020</submitdate></event><event><id>220</id><startdate>26/10/2020</startdate><alldayevent>false</alldayevent><starttime>19:30</starttime><endtime>21:00</endtime><description>Choir</description><category>Student Life</category><submitby>ecoolidge</submitby><submitdate>24/08/2020</submitdate></event><event><id>234</id><startdate>27/10/2020</startdate><alldayevent>true</alldayevent><description>Day 6 (FDE)</description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>24/08/2020</submitdate></event><event><id>92</id><startdate>27/10/2020</startdate><alldayevent>false</alldayevent><starttime>16:00</starttime><endtime>16:45</endtime><description>Advisor Time</description><category>Residential Life</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>145</id><startdate>27/10/2020</startdate><alldayevent>false</alldayevent><starttime>19:30</starttime><endtime>21:00</endtime><description>Student Clubs</description><category>Student Life</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>226</id><startdate>28/10/2020</startdate><alldayevent>true</alldayevent><description>Y2 TOK Essay Due</description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>24/08/2020</submitdate></event><event><id>74</id><startdate>28/10/2020</startdate><alldayevent>false</alldayevent><starttime>08:30</starttime><endtime>10:30</endtime><description>Global Affairs</description><category>Whole College Event</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>109</id><startdate>28/10/2020</startdate><alldayevent>false</alldayevent><starttime>10:45</starttime><endtime>13:30</endtime><description>TOK Y1/Y2</description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>54</id><startdate>28/10/2020</startdate><alldayevent>false</alldayevent><starttime>13:45</starttime><endtime>15:45</endtime><description>Activities </description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>153</id><startdate>28/10/2020</startdate><alldayevent>false</alldayevent><starttime>19:30</starttime><endtime>21:30</endtime><description>Race Evening</description><category>Residential Life</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>235</id><startdate>29/10/2020</startdate><alldayevent>true</alldayevent><description>Day 5 (CAB)</description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>24/08/2020</submitdate></event><event><id>93</id><startdate>29/10/2020</startdate><alldayevent>false</alldayevent><starttime>16:00</starttime><endtime>16:45</endtime><description>Advisor Time</description><category>Residential Life</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>186</id><startdate>29/10/2020</startdate><alldayevent>false</alldayevent><starttime>19:30</starttime><endtime>21:00</endtime><description>Student Organized Events</description><category>Student Life</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>236</id><startdate>30/10/2020</startdate><alldayevent>true</alldayevent><description>Day 6 (FDE)</description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>24/08/2020</submitdate></event><event><id>135</id><startdate>30/10/2020</startdate><alldayevent>false</alldayevent><starttime>16:00</starttime><endtime>17:30</endtime><description>Student Clubs</description><category>Student Life</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>122</id><startdate>01/11/2020</startdate><alldayevent>false</alldayevent><starttime>10:00</starttime><endtime>11:00</endtime><description>Fitness</description><category>Student Life</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>39</id><startdate>01/11/2020</startdate><alldayevent>false</alldayevent><starttime>19:30</starttime><endtime>20:30</endtime><description>House Time</description><category>Residential Life</category><submitby>ecoolidge</submitby>' +
-    '<submitdate>21/08/2020</submitdate></event><event><id>237</id><startdate>02/11/2020</startdate><alldayevent>true</alldayevent><description>IB Self-Taught Language A Exams</description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>24/08/2020</submitdate></event><event><id>245</id><startdate>02/11/2020</startdate><alldayevent>true</alldayevent><description>Day 1 (ABC)</description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>24/08/2020</submitdate></event><event><id>221</id><startdate>02/11/2020</startdate><alldayevent>false</alldayevent><starttime>19:30</starttime><endtime>21:00</endtime><description>Choir</description><category>Student Life</category><submitby>ecoolidge</submitby><submitdate>24/08/2020</submitdate></event><event><id>238</id><startdate>03/11/2020</startdate><alldayevent>true</alldayevent><description>IB Self-Taught Language A Exams</description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>24/08/2020</submitdate></event><event><id>246</id><startdate>03/11/2020</startdate><alldayevent>true</alldayevent><description>Day 2 (DEF)</description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>24/08/2020</submitdate></event><event><id>94</id><startdate>03/11/2020</startdate><alldayevent>false</alldayevent><starttime>16:00</starttime><endtime>16:45</endtime><description>Advisor Time</description><category>Residential Life</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>146</id><startdate>03/11/2020</startdate><alldayevent>false</alldayevent><starttime>19:30</starttime><endtime>21:00</endtime><description>Student Clubs</description><category>Student Life</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>71</id><startdate>04/11/2020</startdate><alldayevent>false</alldayevent><starttime>08:30</starttime><endtime>10:30</endtime><description>Village Gathering</description><category>Whole College Event</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>110</id><startdate>04/11/2020</startdate><alldayevent>false</alldayevent><starttime>10:45</starttime><endtime>13:30</endtime><description>TOK Y1/Y2</description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>55</id><startdate>04/11/2020</startdate><alldayevent>false</alldayevent><starttime>13:45</starttime><endtime>15:45</endtime><description>Activities </description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>154</id><startdate>04/11/2020</startdate><alldayevent>false</alldayevent><starttime>19:30</starttime><endtime>21:30</endtime><description>Gender Evening</description><category>Residential Life</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>247</id><startdate>05/11/2020</startdate><alldayevent>true</alldayevent><description>Day 1 (ABC)</description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>24/08/2020</submitdate></event><event><id>95</id><startdate>05/11/2020</startdate><alldayevent>false</alldayevent><starttime>16:00</starttime><endtime>16:45</endtime><description>Advisor Time</description><category>Residential Life</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>187</id><startdate>05/11/2020</startdate><alldayevent>false</alldayevent><starttime>19:30</starttime><endtime>21:00</endtime><description>Student Organized Events</description><category>Student Life</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>248</id><startdate>06/11/2020</startdate><alldayevent>true</alldayevent><description>Day 2 (DEF)</description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>24/08/2020</submitdate></event><event><id>136</id><startdate>06/11/2020</startdate><alldayevent>false</alldayevent><starttime>16:00</starttime><endtime>17:30</endtime><description>Student Clubs</description><category>Student Life</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>304</id><startdate>07/11/2020</startdate><alldayevent>true</alldayevent><description>Final approved list of 8 universities in Naviance</description><category>Academic</category><submitby>dgrunder</submitby><submitdate>06/09/2020</submitdate></event><event><id>157</id><startdate>07/11/2020</startdate><alldayevent>false</alldayevent><starttime>08:00</starttime><endtime>13:00</endtime><description>SAT</description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>123</id><startdate>08/11/2020</startdate><alldayevent>false</alldayevent><starttime>10:00</starttime><endtime>11:00</endtime><description>Fitness</description><category>Student Life</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>40</id><startdate>08/11/2020</startdate><alldayevent>false</alldayevent><starttime>19:30</starttime><endtime>20:30</endtime><description>House Time</description><category>Residential Life</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>241</id><startdate>09/11/2020</startdate><alldayevent>true</alldayevent><description>Day 3 (BCA)</description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>24/08/2020</submitdate></event><event><id>222</id><startdate>09/11/2020</startdate><alldayevent>false</alldayevent><starttime>19:30</starttime><endtime>21:00</endtime><description>Choir</description><category>Student Life</category><submitby>ecoolidge</submitby><submitdate>24/08/2020</submitdate></event><event><id>242</id><startdate>10/11/2020</startdate><alldayevent>true</alldayevent><description>Day 4 (EFD)</description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>24/08/2020</submitdate></event><event><id>96</id><startdate>10/11/2020</startdate><alldayevent>false</alldayevent><starttime>16:00</starttime><endtime>16:45</endtime><description>Advisor Time</description><category>Residential Life</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>147</id><startdate>10/11/2020</startdate><alldayevent>false</alldayevent><starttime>19:30</starttime><endtime>21:00</endtime><description>Student Clubs</description><category>Student Life</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>47</id><startdate>11/11/2020</startdate><alldayevent>true</alldayevent><description>Special Topics Day </description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>63</id><startdate>11/11/2020</startdate><alldayevent>true</alldayevent><description>Remembrance Day Holiday</description><category>Staff</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>243</id><startdate>12/11/2020</startdate><alldayevent>true</alldayevent><description>Day 3 (BCA)</description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>24/08/2020</submitdate></event><event><id>97</id><startdate>12/11/2020</startdate><alldayevent>false</alldayevent><starttime>16:00</starttime><endtime>16:45</endtime><description>Advisor Time</description><category>Residential Life</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>188</id><startdate>12/11/2020</startdate><alldayevent>false</alldayevent><starttime>19:30</starttime><endtime>21:00</endtime><description>Student Organized Events</description><category>Student Life</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>244</id><startdate>13/11/2020</startdate><alldayevent>true</alldayevent><description>Day 4 (EFD)</description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>24/08/2020</submitdate></event><event><id>137</id><startdate>13/11/2020</startdate><alldayevent>false</alldayevent><starttime>16:00</starttime><endtime>17:30</endtime><description>Student Clubs</description><category>Student Life</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>160</id><startdate>14/11/2020</startdate><alldayevent>true</alldayevent><description>Cultural Sharing Day </description><category>Student Life</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>124</id><startdate>15/11/2020</startdate><alldayevent>false</alldayevent><starttime>10:00</starttime><endtime>11:00</endtime><description>Fitness</description><category>Student Life</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>41</id><startdate>15/11/2020</startdate><alldayevent>false</alldayevent><starttime>19:30</starttime><endtime>20:30</endtime><description>House Time</description><category>Residential Life</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>249</id><startdate>16/11/2020</startdate><alldayevent>true</alldayevent><description>Day 5 (CAB)</description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>24/08/2020</submitdate></event><event><id>223</id><startdate>16/11/2020</startdate><alldayevent>false</alldayevent><starttime>19:30</starttime><endtime>21:00</endtime><description>Choir</description><category>Student Life</category><submitby>ecoolidge</submitby><submitdate>24/08/2020</submitdate></event><event><id>250</id><startdate>17/11/2020</startdate><alldayevent>true</alldayevent><description>Day 6 (FED)</description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>24/08/2020</submitdate></event><event><id>98</id><startdate>17/11/2020</startdate><alldayevent>false</alldayevent>' +
-    '<starttime>16:00</starttime><endtime>16:45</endtime><description>Advisor Time</description><category>Residential Life</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>148</id><startdate>17/11/2020</startdate><alldayevent>false</alldayevent><starttime>19:30</starttime><endtime>21:00</endtime><description>Student Clubs</description><category>Student Life</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>78</id><startdate>18/11/2020</startdate><alldayevent>false</alldayevent><starttime>08:30</starttime><endtime>10:30</endtime><description>Faculty Meeting</description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>112</id><startdate>18/11/2020</startdate><alldayevent>false</alldayevent><starttime>10:45</starttime><endtime>13:30</endtime><description>TOK Y1/Y2</description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>57</id><startdate>18/11/2020</startdate><alldayevent>false</alldayevent><starttime>13:45</starttime><endtime>15:45</endtime><description>Activities </description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>251</id><startdate>19/11/2020</startdate><alldayevent>true</alldayevent><description>Day 5 (CAB)</description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>24/08/2020</submitdate></event><event><id>99</id><startdate>19/11/2020</startdate><alldayevent>false</alldayevent><starttime>16:00</starttime><endtime>16:45</endtime><description>Advisor Time</description><category>Residential Life</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>189</id><startdate>19/11/2020</startdate><alldayevent>false</alldayevent><starttime>19:30</starttime><endtime>21:00</endtime><description>Student Organized Events</description><category>Student Life</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>239</id><startdate>20/11/2020</startdate><alldayevent>true</alldayevent><description>Faculty Pro-D Day</description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>24/08/2020</submitdate></event><event><id>240</id><startdate>20/11/2020</startdate><alldayevent>true</alldayevent><description>Y2 Writing Break/Y1 Workshop</description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>24/08/2020</submitdate></event><event><id>138</id><startdate>20/11/2020</startdate><alldayevent>false</alldayevent><starttime>16:00</starttime><endtime>17:30</endtime><description>Student Clubs</description><category>Student Life</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>125</id><startdate>22/11/2020</startdate><alldayevent>false</alldayevent><starttime>10:00</starttime><endtime>11:00</endtime><description>Fitness</description><category>Student Life</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>42</id><startdate>22/11/2020</startdate><alldayevent>false</alldayevent><starttime>19:30</starttime><endtime>20:30</endtime><description>House Time</description><category>Residential Life</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>163</id><startdate>23/11/2020</startdate><alldayevent>true</alldayevent><description>EE Final Copy Due</description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>252</id><startdate>23/11/2020</startdate><alldayevent>true</alldayevent><description>Day 1 (ABC)</description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>24/08/2020</submitdate></event><event><id>262</id><startdate>23/11/2020</startdate><alldayevent>false</alldayevent><starttime>19:30</starttime><endtime>21:00</endtime><description>Choir</description><category>Student Life</category><submitby>ecoolidge</submitby><submitdate>24/08/2020</submitdate></event><event><id>253</id><startdate>24/11/2020</startdate><alldayevent>true</alldayevent><description>Day 2 (DEF)</description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>24/08/2020</submitdate></event><event><id>100</id><startdate>24/11/2020</startdate><alldayevent>false</alldayevent><starttime>16:00</starttime><endtime>16:45</endtime><description>Advisor Time</description><category>Residential Life</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>149</id><startdate>24/11/2020</startdate><alldayevent>false</alldayevent><starttime>19:30</starttime><endtime>21:00</endtime><description>Student Clubs</description><category>Student Life</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>75</id><startdate>25/11/2020</startdate><alldayevent>false</alldayevent><starttime>08:30</starttime><endtime>10:30</endtime><description>Global Affairs</description><category>Whole College Event</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>113</id><startdate>25/11/2020</startdate><alldayevent>false</alldayevent><starttime>10:45</starttime><endtime>13:30</endtime><description>TOK Y1/Y2</description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>58</id><startdate>25/11/2020</startdate><alldayevent>false</alldayevent><starttime>13:45</starttime><endtime>15:45</endtime><description>Activities </description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>254</id><startdate>26/11/2020</startdate><alldayevent>true</alldayevent><description>Day 1 (ABC)</description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>24/08/2020</submitdate></event><event><id>101</id><startdate>26/11/2020</startdate><alldayevent>false</alldayevent><starttime>16:00</starttime><endtime>16:45</endtime><description>Advisor Time</description><category>Residential Life</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>261</id><startdate>26/11/2020</startdate><alldayevent>false</alldayevent><starttime>19:30</starttime><endtime>21:00</endtime><description>Student Organized Events</description><category>Student Life</category><submitby>ecoolidge</submitby><submitdate>24/08/2020</submitdate></event><event><id>255</id><startdate>27/11/2020</startdate><alldayevent>true</alldayevent><description>Day 2 (DEF)</description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>24/08/2020</submitdate></event><event><id>274</id><startdate>27/11/2020</startdate><alldayevent>false</alldayevent><starttime>16:00</starttime><endtime>17:30</endtime><description>Student Clubs</description><category>Student Life</category><submitby>ecoolidge</submitby><submitdate>24/08/2020</submitdate></event><event><id>161</id><startdate>28/11/2020</startdate><alldayevent>true</alldayevent><description>House Olympics</description><category>Student Life</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>126</id><startdate>29/11/2020</startdate><alldayevent>false</alldayevent><starttime>10:00</starttime><endtime>11:00</endtime><description>Fitness</description><category>Student Life</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>43</id><startdate>29/11/2020</startdate><alldayevent>false</alldayevent><starttime>19:30</starttime><endtime>20:30</endtime><description>House Time</description><category>Residential Life</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>256</id><startdate>30/11/2020</startdate><alldayevent>true</alldayevent><description>Day 3 (BCA)</description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>24/08/2020</submitdate></event><event><id>263</id><startdate>30/11/2020</startdate><alldayevent>false</alldayevent><starttime>19:30</starttime><endtime>21:00</endtime><description>Choir</description><category>Student Life</category><submitby>ecoolidge</submitby><submitdate>24/08/2020</submitdate></event><event><id>257</id><startdate>01/12/2020</startdate><alldayevent>true</alldayevent><description>Day 4 (EFD)</description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>24/08/2020</submitdate></event><event><id>102</id><startdate>01/12/2020</startdate><alldayevent>false</alldayevent><starttime>16:00</starttime><endtime>16:45</endtime><description>Advisor Time</description><category>Residential Life</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>150</id><startdate>01/12/2020</startdate><alldayevent>false</alldayevent><starttime>19:30</starttime><endtime>21:00</endtime><description>Student Clubs</description><category>Student Life</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>72</id><startdate>02/12/2020</startdate><alldayevent>false</alldayevent><starttime>08:30</starttime><endtime>10:30</endtime><description>Village Gathering</description><category>Whole College Event</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>114</id><startdate>02/12/2020</startdate><alldayevent>false</alldayevent><starttime>10:45</starttime><endtime>13:30</endtime><description>TOK Y1/Y2</description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>59</id><startdate>02/12/2020</startdate><alldayevent>false</alldayevent><starttime>13:45</starttime><endtime>15:45</endtime><description>Activities </description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate>' +
-    '</event><event><id>258</id><startdate>03/12/2020</startdate><alldayevent>true</alldayevent><description>Day 3 (BCA)</description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>24/08/2020</submitdate></event><event><id>103</id><startdate>03/12/2020</startdate><alldayevent>false</alldayevent><starttime>16:00</starttime><endtime>16:45</endtime><description>Advisor Time</description><category>Residential Life</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>277</id><startdate>03/12/2020</startdate><alldayevent>false</alldayevent><starttime>19:30</starttime><endtime>21:00</endtime><description>Student Organized Events</description><category>Student Life</category><submitby>ecoolidge</submitby><submitdate>24/08/2020</submitdate></event><event><id>259</id><startdate>04/12/2020</startdate><alldayevent>true</alldayevent><description>Day 4 (EFD)</description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>24/08/2020</submitdate></event><event><id>260</id><startdate>04/12/2020</startdate><alldayevent>true</alldayevent><description>Y2 PG/EE Update</description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>24/08/2020</submitdate></event><event><id>275</id><startdate>04/12/2020</startdate><alldayevent>false</alldayevent><starttime>16:00</starttime><endtime>17:30</endtime><description>Student Clubs</description><category>Student Life</category><submitby>ecoolidge</submitby><submitdate>24/08/2020</submitdate></event><event><id>158</id><startdate>05/12/2020</startdate><alldayevent>false</alldayevent><starttime>08:00</starttime><endtime>13:00</endtime><description>SAT </description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>127</id><startdate>06/12/2020</startdate><alldayevent>false</alldayevent><starttime>10:00</starttime><endtime>11:00</endtime><description>Fitness</description><category>Student Life</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>44</id><startdate>06/12/2020</startdate><alldayevent>false</alldayevent><starttime>19:30</starttime><endtime>20:30</endtime><description>House Time</description><category>Residential Life</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>279</id><startdate>07/12/2020</startdate><alldayevent>true</alldayevent><description>Day 5 (CAB)</description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>24/08/2020</submitdate></event><event><id>288</id><startdate>07/12/2020</startdate><alldayevent>false</alldayevent><starttime>19:30</starttime><endtime>21:00</endtime><description>Choir</description><category>Student Life</category><submitby>ecoolidge</submitby><submitdate>24/08/2020</submitdate></event><event><id>280</id><startdate>08/12/2020</startdate><alldayevent>true</alldayevent><description>Day 6 (FDE)</description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>24/08/2020</submitdate></event><event><id>104</id><startdate>08/12/2020</startdate><alldayevent>false</alldayevent><starttime>16:00</starttime><endtime>16:45</endtime><description>Advisor Time</description><category>Residential Life</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>151</id><startdate>08/12/2020</startdate><alldayevent>false</alldayevent><starttime>19:30</starttime><endtime>21:00</endtime><description>Student Clubs</description><category>Student Life</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>79</id><startdate>09/12/2020</startdate><alldayevent>false</alldayevent><starttime>08:30</starttime><endtime>10:30</endtime><description>Faculty Meeting</description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>115</id><startdate>09/12/2020</startdate><alldayevent>false</alldayevent><starttime>10:45</starttime><endtime>13:30</endtime><description>TOK Y1/Y2</description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>60</id><startdate>09/12/2020</startdate><alldayevent>false</alldayevent><starttime>13:45</starttime><endtime>15:45</endtime><description>Activities </description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>281</id><startdate>10/12/2020</startdate><alldayevent>true</alldayevent><description>Day 5 (CAB)</description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>24/08/2020</submitdate></event><event><id>105</id><startdate>10/12/2020</startdate><alldayevent>false</alldayevent><starttime>16:00</starttime><endtime>16:45</endtime><description>Advisor Time</description><category>Residential Life</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>278</id><startdate>10/12/2020</startdate><alldayevent>false</alldayevent><starttime>19:30</starttime><endtime>21:00</endtime><description>Student Organized Events</description><category>Student Life</category><submitby>ecoolidge</submitby><submitdate>24/08/2020</submitdate></event><event><id>282</id><startdate>11/12/2020</startdate><alldayevent>true</alldayevent><description>Day 6 (FDE)</description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>24/08/2020</submitdate></event><event><id>290</id><startdate>11/12/2020</startdate><alldayevent>true</alldayevent><description>Y1 Academic Reports due</description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>24/08/2020</submitdate></event><event><id>291</id><startdate>11/12/2020</startdate><alldayevent>true</alldayevent><description>Y2 PG/EE Update</description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>24/08/2020</submitdate></event><event><id>310</id><startdate>11/12/2020</startdate><alldayevent>false</alldayevent><starttime>06:15</starttime><endtime>09:15</endtime><description>test event</description><category>Academic</category><location>test location</location><notes>test notes</notes><submitby>AS</submitby><submitdate>22/10/2020</submitdate></event><event><id>289</id><startdate>11/12/2020</startdate><alldayevent>false</alldayevent><starttime>16:00</starttime><endtime>17:30</endtime><description>Student Clubs</description><category>Student Life</category><submitby>ecoolidge</submitby><submitdate>24/08/2020</submitdate></event><event><id>128</id><startdate>13/12/2020</startdate><alldayevent>false</alldayevent><starttime>10:00</starttime><endtime>11:00</endtime><description>Fitness</description><category>Student Life</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>45</id><startdate>13/12/2020</startdate><alldayevent>false</alldayevent><starttime>19:30</starttime><endtime>20:30</endtime><description>House Time</description><category>Residential Life</category><submitby>ecoolidge</submitby><submitdate>21/08/2020</submitdate></event><event><id>283</id><startdate>14/12/2020</startdate><alldayevent>true</alldayevent><description>Day 1 (ABC)</description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>24/08/2020</submitdate></event><event><id>284</id><startdate>15/12/2020</startdate><alldayevent>true</alldayevent><description>Day 2 (DEF)</description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>24/08/2020</submitdate></event><event><id>285</id><startdate>16/12/2020</startdate><alldayevent>true</alldayevent><description>Day 3 (BCA)</description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>24/08/2020</submitdate></event><event><id>286</id><startdate>17/12/2020</startdate><alldayevent>true</alldayevent><description>Day 4 (EFD)</description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>24/08/2020</submitdate></event><event><id>287</id><startdate>18/12/2020</startdate><alldayevent>true</alldayevent><description>End of Term 1</description><category>Whole College Event</category><submitby>ecoolidge</submitby><submitdate>24/08/2020</submitdate></event><event><id>292</id><startdate>18/12/2020</startdate><alldayevent>true</alldayevent><description>Y1/Y2 Advisor Reports due</description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>24/08/2020</submitdate></event><event><id>293</id><startdate>18/12/2020</startdate><alldayevent>true</alldayevent><description>Faculty Meeting</description><category>Academic</category><submitby>ecoolidge</submitby><submitdate>24/08/2020</submitdate></event><event><id>306</id><startdate>27/01/2021</startdate><alldayevent>true</alldayevent><description>Holocaust Remembrance Day</description><category>Whole College Event</category><submitby>ecoolidge</submitby><submitdate>09/10/2020</submitdate></event></iSAMS_CALENDARMANAGER></iSAMS>';
-
-
-/***/ }),
-
 /***/ "./src/main.ts":
 /*!*********************!*\
   !*** ./src/main.ts ***!
@@ -15511,11 +15583,14 @@ var TEST_FEED = '<?xml version="1.0" encoding="utf-8"?><iSAMS><iSAMS_CALENDARMAN
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _config_Config__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./config/Config */ "./src/config/Config.ts");
-/* harmony import */ var _render_RenderCalendar__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./render/RenderCalendar */ "./src/render/RenderCalendar.ts");
+/* harmony import */ var _render_CalendarRenderer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./render/CalendarRenderer */ "./src/render/CalendarRenderer.ts");
 /* harmony import */ var _style_main_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./style/main.css */ "./src/style/main.css");
 /* harmony import */ var _style_main_css__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_style_main_css__WEBPACK_IMPORTED_MODULE_2__);
 /* harmony import */ var _style_modal_css__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./style/modal.css */ "./src/style/modal.css");
 /* harmony import */ var _style_modal_css__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_style_modal_css__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _style_loading_animation_css__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./style/loading-animation.css */ "./src/style/loading-animation.css");
+/* harmony import */ var _style_loading_animation_css__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_style_loading_animation_css__WEBPACK_IMPORTED_MODULE_4__);
+
 
 
 
@@ -15524,12 +15599,238 @@ __webpack_require__.r(__webpack_exports__);
  * Binds the rendering of the calendar to the configured DOM event
  */
 function addListenerToEvent() {
-    document.addEventListener(_config_Config__WEBPACK_IMPORTED_MODULE_0__["Config"].ImplementationConfig.EVENT_NAME_FOR_RENDER_LISTENER, _render_RenderCalendar__WEBPACK_IMPORTED_MODULE_1__["renderCalendar"]);
+    document.addEventListener(_config_Config__WEBPACK_IMPORTED_MODULE_0__["Config"].ImplementationConfig.EVENT_NAME_FOR_RENDER_LISTENER, _render_CalendarRenderer__WEBPACK_IMPORTED_MODULE_1__["renderCalendar"]);
 }
 /**
  * Entry-point for rendering the calendar
  */
 addListenerToEvent();
+
+
+/***/ }),
+
+/***/ "./src/render/CalendarRenderer.ts":
+/*!****************************************!*\
+  !*** ./src/render/CalendarRenderer.ts ***!
+  \****************************************/
+/*! exports provided: renderCalendar */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "renderCalendar", function() { return renderCalendar; });
+/* harmony import */ var _fullcalendar_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @fullcalendar/core */ "./node_modules/@fullcalendar/core/main.js");
+/* harmony import */ var _fullcalendar_interaction__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @fullcalendar/interaction */ "./node_modules/@fullcalendar/interaction/main.js");
+/* harmony import */ var _fullcalendar_daygrid__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @fullcalendar/daygrid */ "./node_modules/@fullcalendar/daygrid/main.js");
+/* harmony import */ var _fullcalendar_timegrid__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @fullcalendar/timegrid */ "./node_modules/@fullcalendar/timegrid/main.js");
+/* harmony import */ var _fullcalendar_list__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @fullcalendar/list */ "./node_modules/@fullcalendar/list/main.js");
+/* harmony import */ var _feed_ISAMSFeed__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../feed/ISAMSFeed */ "./src/feed/ISAMSFeed.ts");
+/* harmony import */ var _feed_ISAMSFeedParser__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../feed/ISAMSFeedParser */ "./src/feed/ISAMSFeedParser.ts");
+/* harmony import */ var _config_Config__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../config/Config */ "./src/config/Config.ts");
+/* harmony import */ var _ModalRenderer__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./ModalRenderer */ "./src/render/ModalRenderer.ts");
+/* harmony import */ var _LoaderRenderer__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./LoaderRenderer */ "./src/render/LoaderRenderer.ts");
+var __assign = (undefined && undefined.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (undefined && undefined.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (_) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
+
+
+
+
+
+
+
+
+
+
+/**
+ * Grabs the reference to the div with id 'calendar' in the HTML DOM
+ */
+function getCalendarHTMLElement() {
+    var calendarElement = document.getElementById(_config_Config__WEBPACK_IMPORTED_MODULE_7__["Config"].ImplementationConfig.CALENDAR_DIV_ID);
+    if (!calendarElement) {
+        throw new Error("Could not find Calendar element: HTML DOM needs to contain a div with id 'calendar'");
+    }
+    return calendarElement;
+}
+/**
+ * Retrieves the events to render on the calendar
+ */
+function fetchEvents(arg, success, failureCallback) {
+    return __awaiter(this, void 0, void 0, function () {
+        var xmlFeed, events, e_1;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    _a.trys.push([0, 2, , 3]);
+                    _LoaderRenderer__WEBPACK_IMPORTED_MODULE_9__["LoaderRenderer"].showLoading();
+                    return [4 /*yield*/, _feed_ISAMSFeed__WEBPACK_IMPORTED_MODULE_5__["ISAMSFeed"].read(arg.start, arg.end)];
+                case 1:
+                    xmlFeed = _a.sent();
+                    events = _feed_ISAMSFeedParser__WEBPACK_IMPORTED_MODULE_6__["ISAMSFeedParser"].parse(xmlFeed);
+                    success(events);
+                    _LoaderRenderer__WEBPACK_IMPORTED_MODULE_9__["LoaderRenderer"].hideLoading();
+                    return [2 /*return*/, Promise.resolve(events)];
+                case 2:
+                    e_1 = _a.sent();
+                    _LoaderRenderer__WEBPACK_IMPORTED_MODULE_9__["LoaderRenderer"].showErrorMessage("Uh oh! Couldn't fetch calendar events.");
+                    failureCallback();
+                    return [2 /*return*/, Promise.reject(e_1)];
+                case 3: return [2 /*return*/];
+            }
+        });
+    });
+}
+/**
+ * Returns an array of the plugins required to render the calendar
+ */
+function getPlugins() {
+    return [_fullcalendar_interaction__WEBPACK_IMPORTED_MODULE_1__["default"], _fullcalendar_daygrid__WEBPACK_IMPORTED_MODULE_2__["default"], _fullcalendar_timegrid__WEBPACK_IMPORTED_MODULE_3__["default"], _fullcalendar_list__WEBPACK_IMPORTED_MODULE_4__["default"]];
+}
+/**
+ * Builds and returns the configuration object for the header toolbar
+ */
+function getHeaderToolbarConfig() {
+    return {
+        left: _config_Config__WEBPACK_IMPORTED_MODULE_7__["Config"].HeaderConfig.LEFT_CONTROLS,
+        center: _config_Config__WEBPACK_IMPORTED_MODULE_7__["Config"].HeaderConfig.CENTER_CONTROLS,
+        right: _config_Config__WEBPACK_IMPORTED_MODULE_7__["Config"].HeaderConfig.RIGHT_CONTROLS,
+    };
+}
+function getCalendarStyle() {
+    // TODO
+    return {};
+}
+/**
+ * Builds the Calendar object with the given configuration
+ * @param calendarElement reference to the div element in the DOM
+ *                        where the calendar will be rendered.
+ */
+function buildCalendarObject(calendarElement) {
+    return new _fullcalendar_core__WEBPACK_IMPORTED_MODULE_0__["Calendar"](calendarElement, __assign({ timeZone: 'UTC', nowIndicator: true, plugins: getPlugins(), headerToolbar: getHeaderToolbarConfig(), initialDate: _config_Config__WEBPACK_IMPORTED_MODULE_7__["Config"].GeneralConfig.INITIAL_DATE, navLinks: _config_Config__WEBPACK_IMPORTED_MODULE_7__["Config"].GeneralConfig.ENABLE_NAV_LINKS_ON_DAY_NAMES, editable: _config_Config__WEBPACK_IMPORTED_MODULE_7__["Config"].GeneralConfig.CALENDAR_IS_EDITABLE, dayMaxEvents: _config_Config__WEBPACK_IMPORTED_MODULE_7__["Config"].GeneralConfig.COLLAPSE_EVENTS_TO_MORE_LINK, events: fetchEvents, eventClick: Object(_ModalRenderer__WEBPACK_IMPORTED_MODULE_8__["getModalRenderer"])() }, getCalendarStyle()));
+}
+/**
+ * Renders the calendar
+ */
+function renderCalendar() {
+    var calendarElement = getCalendarHTMLElement();
+    var calendar = buildCalendarObject(calendarElement);
+    calendar.render();
+}
+
+
+/***/ }),
+
+/***/ "./src/render/LoaderRenderer.ts":
+/*!**************************************!*\
+  !*** ./src/render/LoaderRenderer.ts ***!
+  \**************************************/
+/*! exports provided: LoaderRenderer */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "LoaderRenderer", function() { return LoaderRenderer; });
+var LoaderRenderer = /** @class */ (function () {
+    function LoaderRenderer() {
+    }
+    LoaderRenderer.showLoading = function () {
+        this.showLoadingAnimation();
+        this.showElement(this.getLoaderBox());
+    };
+    LoaderRenderer.hideLoading = function () {
+        this.hideElement(this.getLoaderBox());
+    };
+    LoaderRenderer.showErrorMessage = function (msg) {
+        this.hideLoadingAnimation();
+        this.getErrorTextNode().innerText = msg;
+        this.showElement(this.getErrorTextNode());
+    };
+    LoaderRenderer.showLoadingAnimation = function () {
+        this.showElement(this.getLoadingAnimation());
+    };
+    LoaderRenderer.hideLoadingAnimation = function () {
+        this.hideElement(this.getLoadingAnimation());
+    };
+    LoaderRenderer.showElement = function (element) {
+        element.style.display = "block";
+    };
+    LoaderRenderer.hideElement = function (element) {
+        element.style.display = "none";
+    };
+    LoaderRenderer.getLoaderBox = function () {
+        if (!this.loaderContainer) {
+            this.loaderContainer = document.getElementById("loader-container");
+        }
+        if (!this.loaderContainer) {
+            throw new Error("Couldn't find loader container node");
+        }
+        return this.loaderContainer;
+    };
+    LoaderRenderer.getLoadingAnimation = function () {
+        if (!this.loadingAnimation) {
+            this.loadingAnimation = document.getElementById("loading-animation");
+        }
+        if (!this.loadingAnimation) {
+            throw new Error("Couldn't find loading animation node");
+        }
+        return this.loadingAnimation;
+    };
+    LoaderRenderer.getErrorTextNode = function () {
+        if (!this.errorTextNode) {
+            this.errorTextNode = document.getElementById("error-text");
+        }
+        if (!this.errorTextNode) {
+            throw new Error("Couldn't find error text node");
+        }
+        return this.errorTextNode;
+    };
+    return LoaderRenderer;
+}());
+
 
 
 /***/ }),
@@ -15551,7 +15852,6 @@ function getModalRenderer() {
 }
 function renderModal(arg) {
     try {
-        // TODO: change ids
         setModalText(arg.event);
         showModal();
     }
@@ -15561,7 +15861,6 @@ function renderModal(arg) {
 }
 function setModalText(event) {
     var _a, _b;
-    // TODO:
     setModalTitle(event === null || event === void 0 ? void 0 : event.title);
     setModalDate(event === null || event === void 0 ? void 0 : event.start, event === null || event === void 0 ? void 0 : event.end);
     setModalTime(event === null || event === void 0 ? void 0 : event.start, event === null || event === void 0 ? void 0 : event.end, event === null || event === void 0 ? void 0 : event.allDay);
@@ -15590,7 +15889,7 @@ function dateRangeToDateString(start, end) {
 }
 function dateObjToDateString(date) {
     return date.toLocaleDateString("en-US", {
-        timeZone: 'America/Vancouver',
+        timeZone: 'UTC',
         weekday: 'short',
         year: 'numeric',
         month: 'short',
@@ -15621,7 +15920,7 @@ function dateRangeToTimeString(start, end) {
 }
 function dateObjToTimeString(date) {
     var fullTime = date.toLocaleTimeString("en-US", {
-        timeZone: 'GMT' // the date object is timezone agnostic, so we fix it to GMT
+        timeZone: 'UTC' // the date object is timezone agnostic, so we fix it to UTC
     });
     return removeSecondsFromTimeString(fullTime);
 }
@@ -15698,99 +15997,14 @@ function getModal() {
 
 /***/ }),
 
-/***/ "./src/render/RenderCalendar.ts":
-/*!**************************************!*\
-  !*** ./src/render/RenderCalendar.ts ***!
-  \**************************************/
-/*! exports provided: renderCalendar */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ "./src/style/loading-animation.css":
+/*!*****************************************!*\
+  !*** ./src/style/loading-animation.css ***!
+  \*****************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "renderCalendar", function() { return renderCalendar; });
-/* harmony import */ var _fullcalendar_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @fullcalendar/core */ "./node_modules/@fullcalendar/core/main.js");
-/* harmony import */ var _fullcalendar_interaction__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @fullcalendar/interaction */ "./node_modules/@fullcalendar/interaction/main.js");
-/* harmony import */ var _fullcalendar_daygrid__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @fullcalendar/daygrid */ "./node_modules/@fullcalendar/daygrid/main.js");
-/* harmony import */ var _fullcalendar_timegrid__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @fullcalendar/timegrid */ "./node_modules/@fullcalendar/timegrid/main.js");
-/* harmony import */ var _fullcalendar_list__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @fullcalendar/list */ "./node_modules/@fullcalendar/list/main.js");
-/* harmony import */ var _feed_ISAMSFeed__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../feed/ISAMSFeed */ "./src/feed/ISAMSFeed.ts");
-/* harmony import */ var _feed_ISAMSFeedParser__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../feed/ISAMSFeedParser */ "./src/feed/ISAMSFeedParser.ts");
-/* harmony import */ var _config_Config__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../config/Config */ "./src/config/Config.ts");
-/* harmony import */ var _ModalRenderer__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./ModalRenderer */ "./src/render/ModalRenderer.ts");
-var __assign = (undefined && undefined.__assign) || function () {
-    __assign = Object.assign || function(t) {
-        for (var s, i = 1, n = arguments.length; i < n; i++) {
-            s = arguments[i];
-            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-                t[p] = s[p];
-        }
-        return t;
-    };
-    return __assign.apply(this, arguments);
-};
-
-
-
-
-
-
-
-
-
-/**
- * Grabs the reference to the div with id 'calendar' in the HTML DOM
- */
-function getCalendarHTMLElement() {
-    var calendarElement = document.getElementById(_config_Config__WEBPACK_IMPORTED_MODULE_7__["Config"].ImplementationConfig.CALENDAR_DIV_ID);
-    if (!calendarElement) {
-        throw new Error("Could not find Calendar element: HTML DOM needs to contain a div with id 'calendar'");
-    }
-    return calendarElement;
-}
-/**
- * Retrieves the events to render on the calendar
- */
-function getEvents() {
-    var xmlFeed = _feed_ISAMSFeed__WEBPACK_IMPORTED_MODULE_5__["ISAMSFeed"].readLatest();
-    return _feed_ISAMSFeedParser__WEBPACK_IMPORTED_MODULE_6__["ISAMSFeedParser"].parse(xmlFeed);
-}
-/**
- * Returns an array of the plugins required to render the calendar
- */
-function getPlugins() {
-    return [_fullcalendar_interaction__WEBPACK_IMPORTED_MODULE_1__["default"], _fullcalendar_daygrid__WEBPACK_IMPORTED_MODULE_2__["default"], _fullcalendar_timegrid__WEBPACK_IMPORTED_MODULE_3__["default"], _fullcalendar_list__WEBPACK_IMPORTED_MODULE_4__["default"]];
-}
-/**
- * Builds and returns the configuration object for the header toolbar
- */
-function getHeaderToolbarConfig() {
-    return {
-        left: _config_Config__WEBPACK_IMPORTED_MODULE_7__["Config"].HeaderConfig.LEFT_CONTROLS,
-        center: _config_Config__WEBPACK_IMPORTED_MODULE_7__["Config"].HeaderConfig.CENTER_CONTROLS,
-        right: _config_Config__WEBPACK_IMPORTED_MODULE_7__["Config"].HeaderConfig.RIGHT_CONTROLS,
-    };
-}
-function getCalendarStyle() {
-    // TODO
-    return {};
-}
-/**
- * Builds the Calendar object with the given configuration
- * @param calendarElement reference to the div element in the DOM
- *                        where the calendar will be rendered.
- */
-function buildCalendarObject(calendarElement) {
-    return new _fullcalendar_core__WEBPACK_IMPORTED_MODULE_0__["Calendar"](calendarElement, __assign({ timeZone: 'Americas/Vancouver', nowIndicator: true, plugins: getPlugins(), headerToolbar: getHeaderToolbarConfig(), initialDate: _config_Config__WEBPACK_IMPORTED_MODULE_7__["Config"].GeneralConfig.INITIAL_DATE, navLinks: _config_Config__WEBPACK_IMPORTED_MODULE_7__["Config"].GeneralConfig.ENABLE_NAV_LINKS_ON_DAY_NAMES, editable: _config_Config__WEBPACK_IMPORTED_MODULE_7__["Config"].GeneralConfig.CALENDAR_IS_EDITABLE, dayMaxEvents: _config_Config__WEBPACK_IMPORTED_MODULE_7__["Config"].GeneralConfig.COLLAPSE_EVENTS_TO_MORE_LINK, events: getEvents(), eventClick: Object(_ModalRenderer__WEBPACK_IMPORTED_MODULE_8__["getModalRenderer"])() }, getCalendarStyle()));
-}
-/**
- * Renders the calendar
- */
-function renderCalendar() {
-    var calendarElement = getCalendarHTMLElement();
-    var calendar = buildCalendarObject(calendarElement);
-    calendar.render();
-}
-
+// extracted by mini-css-extract-plugin
 
 /***/ }),
 
