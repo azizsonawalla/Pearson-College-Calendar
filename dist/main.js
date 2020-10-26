@@ -86,6 +86,19 @@
 /************************************************************************/
 /******/ ({
 
+/***/ "./assets/favicon.png":
+/*!****************************!*\
+  !*** ./assets/favicon.png ***!
+  \****************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony default export */ __webpack_exports__["default"] = (__webpack_require__.p + "assets/favicon.png");
+
+/***/ }),
+
 /***/ "./node_modules/@fullcalendar/common/main.css":
 /*!****************************************************!*\
   !*** ./node_modules/@fullcalendar/common/main.css ***!
@@ -15590,6 +15603,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _style_modal_css__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_style_modal_css__WEBPACK_IMPORTED_MODULE_3__);
 /* harmony import */ var _style_loading_animation_css__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./style/loading-animation.css */ "./src/style/loading-animation.css");
 /* harmony import */ var _style_loading_animation_css__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_style_loading_animation_css__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var _assets_favicon_png__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../assets/favicon.png */ "./assets/favicon.png");
+
 
 
 

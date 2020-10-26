@@ -21,7 +21,15 @@ module.exports = {
           { loader: MiniCssExtractPlugin.loader },
           { loader: 'css-loader', options: { importLoaders: 1 } }
         ]
-      }
+      },
+      {
+        test: /\.(png|jpe?g|gif)$/i,
+        loader: 'file-loader',
+        options: {
+          outputPath: 'assets',
+          name: '[name].[ext]'
+        }
+      },
     ]
   },
   output: {

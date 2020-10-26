@@ -1,40 +1,41 @@
 <!DOCTYPE html>
 <html>
-
   <head>
-    <meta charset='utf-8' />    
+    <meta charset="utf-8" />
 
     <!-- Start import stylesheets -->
-    <link href='dist/main.css' rel='stylesheet' />
+    <link href="dist/main.css" rel="stylesheet" />
     <!-- End import stylesheets -->
-    
+
     <!-- Start import JavaScript -->
-    <script src='dist/main.js'></script>
+    <script src="dist/main.js"></script>
     <!-- End import JavaScript -->
 
     <title>Calendar | Pearson College UWC</title>
+
+    <!--Favicon-->
+    <link rel="icon" type="image/png" href="dist/assets/favicon.png" />
+    <!-- End Favicon-->
   </head>
 
   <body>
-
     <!-- Start Calendar -->
-    <div id='calendar'></div>
+    <div id="calendar"></div>
     <!-- End Calendar -->
 
     <!-- Start modal -->
     <div id="popupModal" class="modal">
-
       <!-- Modal content -->
       <div class="modal-content">
         <span class="close">&times;</span>
         <p id="modal-title" class="modal-title">[Event title]</p>
-        <hr class="modal-separator">
+        <hr class="modal-separator" />
         <p>
           <span id="date-prop" class="modal-date">[Date]</span>
           <span>&nbsp;&nbsp;｜&nbsp;&nbsp;</span>
           <span id="time-prop" class="modal-time">[Time]</span>
         </p>
-        <br>
+        <br />
         <p>
           <span class="modal-prop-label">Location:&nbsp;</span>
           <span id="location-prop" class="modal-prop-value">[Location]</span>
@@ -49,16 +50,19 @@
         </p>
       </div>
       <!-- End Modal Content-->
-    
     </div>
     <!-- End modal -->
 
     <!--Loading animation-->
     <div class="loader-container" id="loader-container">
-      <div class="lds-ellipsis" id="loading-animation"><div></div><div></div><div></div><div></div></div>
+      <div class="lds-ellipsis" id="loading-animation">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
       <p class="error-text" id="error-text">There was an error</p>
     </div>
     <!--End lLoading animation-->
-    
   </body>
 </html>

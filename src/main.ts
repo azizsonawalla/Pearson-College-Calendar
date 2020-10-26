@@ -3,6 +3,7 @@ import { renderCalendar } from "./render/CalendarRenderer";
 import "./style/main.css";
 import "./style/modal.css"; 
 import "./style/loading-animation.css"; 
+import "../assets/favicon.png"; 
 
 /**
  * Binds the rendering of the calendar to the configured DOM event
