@@ -15409,7 +15409,8 @@ var ISAMSFeed = /** @class */ (function () {
                 //     console.info(`Fetching from proxy`);
                 //     return this.fetchFromUrlViaProxy(queryUrl);
                 // });
-                return [2 /*return*/, this.fetchFromUrlViaProxy(queryUrl)];
+                // return this.fetchFromUrlViaProxy(queryUrl);
+                return [2 /*return*/, this.fetchFromUrl(queryUrl)];
             });
         });
     };
@@ -15459,7 +15460,7 @@ var ISAMSFeed = /** @class */ (function () {
             });
         });
     };
-    ISAMSFeed.PRIMARY_HOST = "https://isams.pearsoncollege.ca/system/api/feeds/calendar.ashx";
+    ISAMSFeed.PRIMARY_HOST = "https://testasonawalla.azurewebsites.net/isams";
     ISAMSFeed.CORS_PROXY = "https://cors-anywhere.herokuapp.com";
     return ISAMSFeed;
 }());

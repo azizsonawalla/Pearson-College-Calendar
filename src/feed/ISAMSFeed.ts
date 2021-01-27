@@ -1,6 +1,6 @@
 export class ISAMSFeed {
 
-    private static PRIMARY_HOST = "https://isams.pearsoncollege.ca/system/api/feeds/calendar.ashx";
+    private static PRIMARY_HOST = "https://testasonawalla.azurewebsites.net/isams";
     private static CORS_PROXY = "https://cors-anywhere.herokuapp.com";
 
     public static async read(start?: Date, end?: Date): Promise<XMLDocument> {
@@ -12,7 +12,8 @@ export class ISAMSFeed {
         //     console.info(`Fetching from proxy`);
         //     return this.fetchFromUrlViaProxy(queryUrl);
         // });
-        return this.fetchFromUrlViaProxy(queryUrl);
+        // return this.fetchFromUrlViaProxy(queryUrl);
+        return this.fetchFromUrl(queryUrl)
     }
 
     private static buildQueryUrl(start?: Date, end?: Date): string {
