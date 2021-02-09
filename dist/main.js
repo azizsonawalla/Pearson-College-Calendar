@@ -15401,37 +15401,31 @@ var ISAMSFeed = /** @class */ (function () {
         return __awaiter(this, void 0, void 0, function () {
             var queryUrl;
             return __generator(this, function (_a) {
-                queryUrl = this.buildQueryUrl(start, end);
-                console.log("Querying " + queryUrl);
-                // return this.fetchFromUrl(queryUrl)
-                // .catch(e => {
-                //     console.warn(`Fetch from primary url failed: ${e}`);
-                //     console.info(`Fetching from proxy`);
-                //     return this.fetchFromUrlViaProxy(queryUrl);
-                // });
-                return [2 /*return*/, this.fetchFromUrlViaProxy(queryUrl)];
+                queryUrl = this.buildQueryUrl(this.PRIMARY_URL, start, end, false);
+                return [2 /*return*/, this.fetchFromUrl(queryUrl)];
             });
         });
     };
-    ISAMSFeed.buildQueryUrl = function (start, end) {
-        var queryUrl = this.PRIMARY_HOST;
+    ISAMSFeed.buildQueryUrl = function (domain, start, end, encodeParams) {
+        var params = "";
         if (start || end) {
-            queryUrl += "?";
+            params += "?";
         }
         if (start) {
-            queryUrl += "date=" + start.toLocaleDateString('en-GB');
+            params += "date=" + start.toLocaleDateString('en-GB');
             if (end) {
-                queryUrl += "&";
+                params += "&";
             }
         }
         if (end) {
-            queryUrl += "endDate=" + end.toLocaleDateString('en-GB');
+            params += "endDate=" + end.toLocaleDateString('en-GB');
         }
-        return queryUrl;
+        return domain + (encodeParams ? encodeURIComponent(params) : params);
     };
     ISAMSFeed.fetchFromUrl = function (queryUrl) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
+                console.log("Fetching from " + queryUrl);
                 return [2 /*return*/, new Promise(function (resolve, reject) {
                         var req = new XMLHttpRequest();
                         req.onreadystatechange = function () {
@@ -15450,17 +15444,13 @@ var ISAMSFeed = /** @class */ (function () {
             });
         });
     };
-    ISAMSFeed.fetchFromUrlViaProxy = function (queryUrl) {
-        return __awaiter(this, void 0, void 0, function () {
-            var proxyUrl;
-            return __generator(this, function (_a) {
-                proxyUrl = this.CORS_PROXY + "/" + queryUrl;
-                return [2 /*return*/, this.fetchFromUrl(proxyUrl)];
-            });
-        });
-    };
-    ISAMSFeed.PRIMARY_HOST = "https://isams.pearsoncollege.ca/system/api/feeds/calendar.ashx";
-    ISAMSFeed.CORS_PROXY = "https://cors-anywhere.herokuapp.com";
+    /**
+     * This is the URL that the app will first attempt to retrieve the feed from.
+     * Currently, this is a Microsoft Azure Function App that acts as a proxy to the
+     * iSAMS feed to bypass CORS errors.
+     */
+    ISAMSFeed.PRIMARY_URL = "https://pearsoncollegeproxy.azurewebsites.net/isams-calendar";
+    ISAMSFeed.BACKUP_URL = null; // No backup URL right now
     return ISAMSFeed;
 }());
 

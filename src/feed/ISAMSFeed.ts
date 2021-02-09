@@ -1,38 +1,38 @@
 export class ISAMSFeed {
 
-    private static PRIMARY_HOST = "https://isams.pearsoncollege.ca/system/api/feeds/calendar.ashx";
-    private static CORS_PROXY = "https://cors-anywhere.herokuapp.com";
+    /**
+     * This is the URL that the app will first attempt to retrieve the feed from.
+     * Currently, this is a Microsoft Azure Function App that acts as a proxy to the
+     * iSAMS feed to bypass CORS errors.
+     */
+    private static PRIMARY_URL = "https://pearsoncollegeproxy.azurewebsites.net/isams-calendar";
+
+    private static BACKUP_URL = null; // No backup URL right now
 
     public static async read(start?: Date, end?: Date): Promise<XMLDocument> {
-        const queryUrl = this.buildQueryUrl(start, end);
-        console.log(`Querying ${queryUrl}`);
-        // return this.fetchFromUrl(queryUrl)
-        // .catch(e => {
-        //     console.warn(`Fetch from primary url failed: ${e}`);
-        //     console.info(`Fetching from proxy`);
-        //     return this.fetchFromUrlViaProxy(queryUrl);
-        // });
-        return this.fetchFromUrlViaProxy(queryUrl);
+        const queryUrl = this.buildQueryUrl(this.PRIMARY_URL, start, end, false);
+        return this.fetchFromUrl(queryUrl)
     }
 
-    private static buildQueryUrl(start?: Date, end?: Date): string {
-        let queryUrl = this.PRIMARY_HOST;
+    private static buildQueryUrl(domain: string, start?: Date, end?: Date, encodeParams?: boolean): string {
+        let params = "";
         if (start || end) {
-            queryUrl += "?";
+            params += "?";
         }
         if (start) {
-            queryUrl += `date=${start.toLocaleDateString('en-GB')}`;
+            params += `date=${start.toLocaleDateString('en-GB')}`;
             if (end) {
-                queryUrl += "&";
+                params += "&";
             }
         }
         if (end) {
-            queryUrl += `endDate=${end.toLocaleDateString('en-GB')}`;
+            params += `endDate=${end.toLocaleDateString('en-GB')}`;
         }
-        return queryUrl;
+        return domain + (encodeParams ? encodeURIComponent(params) : params);
     }
 
     private static async fetchFromUrl(queryUrl: string): Promise<XMLDocument> {
+        console.log(`Fetching from ${queryUrl}`);
         return new Promise((resolve, reject) => {
             const req = new XMLHttpRequest();
             req.onreadystatechange = () => {
@@ -47,10 +47,5 @@ export class ISAMSFeed {
             req.open('GET', queryUrl, true);
             req.send();
         });
-    }
-
-    private static async fetchFromUrlViaProxy(queryUrl: string): Promise<XMLDocument> {
-        const proxyUrl = `${this.CORS_PROXY}/${queryUrl}`
-        return this.fetchFromUrl(proxyUrl);
     }
 }
