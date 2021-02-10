@@ -1,3 +1,5 @@
+import {Time} from "../util/Time"
+
 /**
  * Configuration for the program.
  *
@@ -35,6 +37,11 @@ export class Config {
      * make them all fit
      */
     public static COLLAPSE_EVENTS_TO_MORE_LINK: boolean = true;
+
+    /**
+     * Cache ttl - how long should queries to the iSAMS feed be cached by default
+     */
+    public static CACHE_ENTRY_TTL: number = 15 * Time.MINUTE;
   };
 
   public static HeaderConfig = class {

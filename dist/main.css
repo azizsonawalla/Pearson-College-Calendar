@@ -1424,14 +1424,14 @@ A VERTICAL event
 
 body {
   margin: 0;
-  padding: 4vh;
+  padding: 2vh 2vw;
   font-family: 'Open Sans', sans-serif;
   font-size: 14px;
 }
 
 /* Calendar Object */
 #calendar {
-  height: 90vh;
+  height: 96vh;
   max-height: 100%;
   margin: 0;
 }
@@ -1439,6 +1439,11 @@ body {
 /* Event titles */
 .fc-event-title:hover, .fc-event-title-container:hover {
   cursor: pointer;
+}
+
+/* Hide content scroll bar */
+.fc-scroller {
+  overflow-y: hidden !important;
 }
 /* The Modal (background) */
 .modal {
