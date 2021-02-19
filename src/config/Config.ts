@@ -41,7 +41,7 @@ export class Config {
     /**
      * Cache ttl - how long should queries to the iSAMS feed be cached by default
      */
-    public static CACHE_ENTRY_TTL: number = 15 * Time.MINUTE;
+    public static CACHE_ENTRY_TTL: number = 1 * Time.DAY;
   };
 
   public static HeaderConfig = class {

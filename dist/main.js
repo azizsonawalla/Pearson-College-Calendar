@@ -15296,7 +15296,7 @@ var Config = /** @class */ (function () {
         /**
          * Cache ttl - how long should queries to the iSAMS feed be cached by default
          */
-        _a.CACHE_ENTRY_TTL = 15 * _util_Time__WEBPACK_IMPORTED_MODULE_0__["Time"].MINUTE,
+        _a.CACHE_ENTRY_TTL = 1 * _util_Time__WEBPACK_IMPORTED_MODULE_0__["Time"].DAY,
         _a);
     Config.HeaderConfig = (_b = /** @class */ (function () {
             function class_2() {
@@ -15481,7 +15481,7 @@ var ISAMSFeed = /** @class */ (function () {
             var queryUrl;
             return __generator(this, function (_a) {
                 queryUrl = this.buildQueryUrl(this.PRIMARY_URL, start, end, false);
-                console.log("Fetching from " + queryUrl);
+                console.log("Fetching events from ISAMS feed");
                 return [2 /*return*/, new Promise(function (resolve, reject) {
                         var req = new XMLHttpRequest();
                         req.onreadystatechange = function () {
@@ -15527,11 +15527,11 @@ var ISAMSFeed = /** @class */ (function () {
      */
     ISAMSFeed.getFromCache = function (start, end) {
         var key = this.hash(start, end);
-        console.log("Checking in cache");
+        console.log("Checking in cache for events between " + (start === null || start === void 0 ? void 0 : start.toDateString()) + " and " + (end === null || end === void 0 ? void 0 : end.toDateString()));
         var cachedValue = _Cache__WEBPACK_IMPORTED_MODULE_1__["Cache"].getCacheEntry(key);
         if (cachedValue != null) {
             var cachedXML = new DOMParser().parseFromString(cachedValue, "text/xml");
-            console.log("Found value in cache");
+            console.log("Found data in cache for events between " + (start === null || start === void 0 ? void 0 : start.toDateString()) + " and " + (end === null || end === void 0 ? void 0 : end.toDateString()));
             return Promise.resolve(cachedXML);
         }
         console.log("No data found in cache");
@@ -15540,7 +15540,7 @@ var ISAMSFeed = /** @class */ (function () {
     ISAMSFeed.writeToCache = function (data, start, end) {
         var key = this.hash(start, end);
         var dataAsString = new XMLSerializer().serializeToString(data);
-        console.log("Storing entries in cache");
+        console.log("Storing data in cache for events between " + (start === null || start === void 0 ? void 0 : start.toDateString()) + " and " + (end === null || end === void 0 ? void 0 : end.toDateString()));
         _Cache__WEBPACK_IMPORTED_MODULE_1__["Cache"].newCacheEntry(key, dataAsString, _config_Config__WEBPACK_IMPORTED_MODULE_0__["Config"].GeneralConfig.CACHE_ENTRY_TTL);
     };
     /**
@@ -15862,18 +15862,21 @@ function clearCacheAndRefreshPage() {
     _feed_Cache__WEBPACK_IMPORTED_MODULE_10__["Cache"].clearCache();
     location.reload();
 }
+function getCacheRefreshButton() {
+    return {
+        clearCache: {
+            text: 'Refresh',
+            click: clearCacheAndRefreshPage
+        }
+    };
+}
 /**
  * Builds the Calendar object with the given configuration
  * @param calendarElement reference to the div element in the DOM
  *                        where the calendar will be rendered.
  */
 function buildCalendarObject(calendarElement) {
-    return new _fullcalendar_core__WEBPACK_IMPORTED_MODULE_0__["Calendar"](calendarElement, __assign({ timeZone: 'UTC', nowIndicator: true, plugins: getPlugins(), headerToolbar: getHeaderToolbarConfig(), footerToolbar: getFooterToolbarConfig(), initialDate: _config_Config__WEBPACK_IMPORTED_MODULE_7__["Config"].GeneralConfig.INITIAL_DATE, navLinks: _config_Config__WEBPACK_IMPORTED_MODULE_7__["Config"].GeneralConfig.ENABLE_NAV_LINKS_ON_DAY_NAMES, editable: _config_Config__WEBPACK_IMPORTED_MODULE_7__["Config"].GeneralConfig.CALENDAR_IS_EDITABLE, dayMaxEvents: _config_Config__WEBPACK_IMPORTED_MODULE_7__["Config"].GeneralConfig.COLLAPSE_EVENTS_TO_MORE_LINK, events: fetchEvents, eventClick: Object(_ModalRenderer__WEBPACK_IMPORTED_MODULE_8__["getModalRenderer"])(), customButtons: {
-            clearCache: {
-                text: 'Refresh',
-                click: clearCacheAndRefreshPage
-            }
-        } }, getCalendarStyle()));
+    return new _fullcalendar_core__WEBPACK_IMPORTED_MODULE_0__["Calendar"](calendarElement, __assign({ timeZone: 'UTC', nowIndicator: true, plugins: getPlugins(), headerToolbar: getHeaderToolbarConfig(), footerToolbar: getFooterToolbarConfig(), initialDate: _config_Config__WEBPACK_IMPORTED_MODULE_7__["Config"].GeneralConfig.INITIAL_DATE, navLinks: _config_Config__WEBPACK_IMPORTED_MODULE_7__["Config"].GeneralConfig.ENABLE_NAV_LINKS_ON_DAY_NAMES, editable: _config_Config__WEBPACK_IMPORTED_MODULE_7__["Config"].GeneralConfig.CALENDAR_IS_EDITABLE, dayMaxEvents: _config_Config__WEBPACK_IMPORTED_MODULE_7__["Config"].GeneralConfig.COLLAPSE_EVENTS_TO_MORE_LINK, events: fetchEvents, eventClick: Object(_ModalRenderer__WEBPACK_IMPORTED_MODULE_8__["getModalRenderer"])(), customButtons: __assign({}, getCacheRefreshButton()) }, getCalendarStyle()));
 }
 /**
  * Renders the calendar

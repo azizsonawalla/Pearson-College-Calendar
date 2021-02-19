@@ -88,6 +88,15 @@ function clearCacheAndRefreshPage() {
   location.reload()
 }
 
+function getCacheRefreshButton() {
+  return {
+    clearCache: {
+      text: 'Refresh',
+      click: clearCacheAndRefreshPage
+    }
+  }
+}
+
 /**
  * Builds the Calendar object with the given configuration
  * @param calendarElement reference to the div element in the DOM 
@@ -107,10 +116,7 @@ function buildCalendarObject(calendarElement: HTMLElement): Calendar {
     events: fetchEvents,
     eventClick: getModalRenderer(),
     customButtons: {
-      clearCache: {
-        text: 'Refresh',
-        click: clearCacheAndRefreshPage
-      }
+      ...getCacheRefreshButton() 
     },
     ... getCalendarStyle()
   });

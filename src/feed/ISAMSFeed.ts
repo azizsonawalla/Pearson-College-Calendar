@@ -25,7 +25,7 @@ export class ISAMSFeed {
 
     private static async fetchFromISAMS(start?: Date, end?: Date): Promise<XMLDocument> {
         const queryUrl = this.buildQueryUrl(this.PRIMARY_URL, start, end, false);
-        console.log(`Fetching from ${queryUrl}`);
+        console.log(`Fetching events from ISAMS feed`);
         return new Promise((resolve, reject) => {
             const req = new XMLHttpRequest();
             req.onreadystatechange = () => {
@@ -71,11 +71,11 @@ export class ISAMSFeed {
      */
     private static getFromCache(start?: Date, end?: Date): Promise<XMLDocument> {
         const key = this.hash(start, end)
-        console.log(`Checking in cache`)
+        console.log(`Checking in cache for events between ${start?.toDateString()} and ${end?.toDateString()}`)
         const cachedValue = Cache.getCacheEntry(key)
         if (cachedValue != null) {
             const cachedXML = new DOMParser().parseFromString(cachedValue, "text/xml");
-            console.log(`Found value in cache`)
+            console.log(`Found data in cache for events between ${start?.toDateString()} and ${end?.toDateString()}`)
             return Promise.resolve(cachedXML);
         }
         console.log(`No data found in cache`)
@@ -85,7 +85,7 @@ export class ISAMSFeed {
     private static writeToCache(data: XMLDocument, start?: Date, end?: Date) {
         const key = this.hash(start, end)
         const dataAsString = new XMLSerializer().serializeToString(data);
-        console.log(`Storing entries in cache`)
+        console.log(`Storing data in cache for events between ${start?.toDateString()} and ${end?.toDateString()}`)
         Cache.newCacheEntry(key, dataAsString, Config.GeneralConfig.CACHE_ENTRY_TTL);
     }
 }
