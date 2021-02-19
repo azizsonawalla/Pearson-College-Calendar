@@ -15249,6 +15249,8 @@ function __classPrivateFieldSet(receiver, privateMap, value) {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Config", function() { return Config; });
+/* harmony import */ var _util_Time__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../util/Time */ "./src/util/Time.ts");
+
 /**
  * Configuration for the program.
  *
@@ -15291,6 +15293,10 @@ var Config = /** @class */ (function () {
          * make them all fit
          */
         _a.COLLAPSE_EVENTS_TO_MORE_LINK = true,
+        /**
+         * Cache ttl - how long should queries to the iSAMS feed be cached by default
+         */
+        _a.CACHE_ENTRY_TTL = 15 * _util_Time__WEBPACK_IMPORTED_MODULE_0__["Time"].MINUTE,
         _a);
     Config.HeaderConfig = (_b = /** @class */ (function () {
             function class_2() {
@@ -15348,6 +15354,60 @@ var Config = /** @class */ (function () {
 
 /***/ }),
 
+/***/ "./src/feed/Cache.ts":
+/*!***************************!*\
+  !*** ./src/feed/Cache.ts ***!
+  \***************************/
+/*! exports provided: Cache */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Cache", function() { return Cache; });
+var Cache = /** @class */ (function () {
+    function Cache() {
+    }
+    Cache.newCacheEntry = function (key, val, ttl) {
+        var expires = new Date();
+        expires.setTime(expires.getTime() + ttl);
+        this.storeWithExpiry(key, val, expires);
+    };
+    Cache.getCacheEntry = function (key) {
+        return this.retrieveAndCheckExpiry(key);
+    };
+    Cache.deleteCacheEntry = function (key) {
+        localStorage.removeItem(key);
+    };
+    Cache.clearCache = function () {
+        localStorage.clear();
+    };
+    Cache.storeWithExpiry = function (key, value, expires) {
+        var item = {
+            value: value,
+            expiry: expires.getTime(),
+        };
+        localStorage.setItem(key, JSON.stringify(item));
+    };
+    Cache.retrieveAndCheckExpiry = function (key) {
+        var itemStr = localStorage.getItem(key);
+        if (!itemStr) {
+            return undefined;
+        }
+        var item = JSON.parse(itemStr);
+        var now = new Date();
+        if (now.getTime() > item.expiry) {
+            localStorage.removeItem(key);
+            return undefined;
+        }
+        return item.value;
+    };
+    return Cache;
+}());
+
+
+
+/***/ }),
+
 /***/ "./src/feed/ISAMSFeed.ts":
 /*!*******************************!*\
   !*** ./src/feed/ISAMSFeed.ts ***!
@@ -15358,6 +15418,8 @@ var Config = /** @class */ (function () {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ISAMSFeed", function() { return ISAMSFeed; });
+/* harmony import */ var _config_Config__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../config/Config */ "./src/config/Config.ts");
+/* harmony import */ var _Cache__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Cache */ "./src/feed/Cache.ts");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -15394,15 +15456,47 @@ var __generator = (undefined && undefined.__generator) || function (thisArg, bod
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+
+
 var ISAMSFeed = /** @class */ (function () {
     function ISAMSFeed() {
     }
     ISAMSFeed.read = function (start, end) {
         return __awaiter(this, void 0, void 0, function () {
+            var _this = this;
+            return __generator(this, function (_a) {
+                return [2 /*return*/, this.getFromCache(start, end) // try cache first
+                        .catch(function () {
+                        return _this.fetchFromISAMS(start, end) // fetch from feed
+                            .then(function (dataFromUrl) {
+                            _this.writeToCache(dataFromUrl, start, end);
+                            return dataFromUrl;
+                        });
+                    })];
+            });
+        });
+    };
+    ISAMSFeed.fetchFromISAMS = function (start, end) {
+        return __awaiter(this, void 0, void 0, function () {
             var queryUrl;
             return __generator(this, function (_a) {
                 queryUrl = this.buildQueryUrl(this.PRIMARY_URL, start, end, false);
-                return [2 /*return*/, this.fetchFromUrl(queryUrl)];
+                console.log("Fetching from " + queryUrl);
+                return [2 /*return*/, new Promise(function (resolve, reject) {
+                        var req = new XMLHttpRequest();
+                        req.onreadystatechange = function () {
+                            if (req.readyState === 4 && req.status === 200) {
+                                resolve(new DOMParser().parseFromString(req.responseText, "text/xml"));
+                                return;
+                            }
+                            else if (req.readyState === 4 && req.status !== 200) {
+                                reject("Request to feed failed: " + req.responseText);
+                                return;
+                            }
+                        };
+                        req.open('GET', queryUrl, true);
+                        req.send();
+                    })];
             });
         });
     };
@@ -15422,27 +15516,32 @@ var ISAMSFeed = /** @class */ (function () {
         }
         return domain + (encodeParams ? encodeURIComponent(params) : params);
     };
-    ISAMSFeed.fetchFromUrl = function (queryUrl) {
-        return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                console.log("Fetching from " + queryUrl);
-                return [2 /*return*/, new Promise(function (resolve, reject) {
-                        var req = new XMLHttpRequest();
-                        req.onreadystatechange = function () {
-                            if (req.readyState === 4 && req.status === 200) {
-                                resolve(new DOMParser().parseFromString(req.responseText, "text/xml"));
-                                return;
-                            }
-                            else if (req.readyState === 4 && req.status !== 200) {
-                                reject("Request to feed failed: " + req.responseText);
-                                return;
-                            }
-                        };
-                        req.open('GET', queryUrl, true);
-                        req.send();
-                    })];
-            });
-        });
+    ISAMSFeed.hash = function (start, end) {
+        var hash = (start != null ? start.toISOString() : "") + "_" + (end != null ? end.toISOString() : "");
+        return hash;
+    };
+    /**
+     * Checks if data for query url exists in cache. If so, returns a promise that will
+     * resolve with data. If not, promise will reject.
+     * @param queryUrl query url for which to check cache
+     */
+    ISAMSFeed.getFromCache = function (start, end) {
+        var key = this.hash(start, end);
+        console.log("Checking in cache");
+        var cachedValue = _Cache__WEBPACK_IMPORTED_MODULE_1__["Cache"].getCacheEntry(key);
+        if (cachedValue != null) {
+            var cachedXML = new DOMParser().parseFromString(cachedValue, "text/xml");
+            console.log("Found value in cache");
+            return Promise.resolve(cachedXML);
+        }
+        console.log("No data found in cache");
+        return Promise.reject("Cached value does not exist for " + key);
+    };
+    ISAMSFeed.writeToCache = function (data, start, end) {
+        var key = this.hash(start, end);
+        var dataAsString = new XMLSerializer().serializeToString(data);
+        console.log("Storing entries in cache");
+        _Cache__WEBPACK_IMPORTED_MODULE_1__["Cache"].newCacheEntry(key, dataAsString, _config_Config__WEBPACK_IMPORTED_MODULE_0__["Config"].GeneralConfig.CACHE_ENTRY_TTL);
     };
     /**
      * This is the URL that the app will first attempt to retrieve the feed from.
@@ -15634,6 +15733,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _config_Config__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../config/Config */ "./src/config/Config.ts");
 /* harmony import */ var _ModalRenderer__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./ModalRenderer */ "./src/render/ModalRenderer.ts");
 /* harmony import */ var _LoaderRenderer__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./LoaderRenderer */ "./src/render/LoaderRenderer.ts");
+/* harmony import */ var _feed_Cache__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../feed/Cache */ "./src/feed/Cache.ts");
 var __assign = (undefined && undefined.__assign) || function () {
     __assign = Object.assign || function(t) {
         for (var s, i = 1, n = arguments.length; i < n; i++) {
@@ -15681,6 +15781,7 @@ var __generator = (undefined && undefined.__generator) || function (thisArg, bod
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+
 
 
 
@@ -15745,9 +15846,21 @@ function getHeaderToolbarConfig() {
         right: _config_Config__WEBPACK_IMPORTED_MODULE_7__["Config"].HeaderConfig.RIGHT_CONTROLS,
     };
 }
+/**
+ * Builds and returns the configuration object for the footer toolbar
+ */
+function getFooterToolbarConfig() {
+    return {
+        right: "clearCache",
+    };
+}
 function getCalendarStyle() {
     // TODO
     return {};
+}
+function clearCacheAndRefreshPage() {
+    _feed_Cache__WEBPACK_IMPORTED_MODULE_10__["Cache"].clearCache();
+    location.reload();
 }
 /**
  * Builds the Calendar object with the given configuration
@@ -15755,7 +15868,12 @@ function getCalendarStyle() {
  *                        where the calendar will be rendered.
  */
 function buildCalendarObject(calendarElement) {
-    return new _fullcalendar_core__WEBPACK_IMPORTED_MODULE_0__["Calendar"](calendarElement, __assign({ timeZone: 'UTC', nowIndicator: true, plugins: getPlugins(), headerToolbar: getHeaderToolbarConfig(), initialDate: _config_Config__WEBPACK_IMPORTED_MODULE_7__["Config"].GeneralConfig.INITIAL_DATE, navLinks: _config_Config__WEBPACK_IMPORTED_MODULE_7__["Config"].GeneralConfig.ENABLE_NAV_LINKS_ON_DAY_NAMES, editable: _config_Config__WEBPACK_IMPORTED_MODULE_7__["Config"].GeneralConfig.CALENDAR_IS_EDITABLE, dayMaxEvents: _config_Config__WEBPACK_IMPORTED_MODULE_7__["Config"].GeneralConfig.COLLAPSE_EVENTS_TO_MORE_LINK, events: fetchEvents, eventClick: Object(_ModalRenderer__WEBPACK_IMPORTED_MODULE_8__["getModalRenderer"])() }, getCalendarStyle()));
+    return new _fullcalendar_core__WEBPACK_IMPORTED_MODULE_0__["Calendar"](calendarElement, __assign({ timeZone: 'UTC', nowIndicator: true, plugins: getPlugins(), headerToolbar: getHeaderToolbarConfig(), footerToolbar: getFooterToolbarConfig(), initialDate: _config_Config__WEBPACK_IMPORTED_MODULE_7__["Config"].GeneralConfig.INITIAL_DATE, navLinks: _config_Config__WEBPACK_IMPORTED_MODULE_7__["Config"].GeneralConfig.ENABLE_NAV_LINKS_ON_DAY_NAMES, editable: _config_Config__WEBPACK_IMPORTED_MODULE_7__["Config"].GeneralConfig.CALENDAR_IS_EDITABLE, dayMaxEvents: _config_Config__WEBPACK_IMPORTED_MODULE_7__["Config"].GeneralConfig.COLLAPSE_EVENTS_TO_MORE_LINK, events: fetchEvents, eventClick: Object(_ModalRenderer__WEBPACK_IMPORTED_MODULE_8__["getModalRenderer"])(), customButtons: {
+            clearCache: {
+                text: 'Refresh',
+                click: clearCacheAndRefreshPage
+            }
+        } }, getCalendarStyle()));
 }
 /**
  * Renders the calendar
@@ -16032,6 +16150,30 @@ function getModal() {
 /***/ (function(module, exports, __webpack_require__) {
 
 // extracted by mini-css-extract-plugin
+
+/***/ }),
+
+/***/ "./src/util/Time.ts":
+/*!**************************!*\
+  !*** ./src/util/Time.ts ***!
+  \**************************/
+/*! exports provided: Time */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Time", function() { return Time; });
+var Time;
+(function (Time) {
+    Time[Time["SECOND"] = 1000] = "SECOND";
+    Time[Time["MINUTE"] = 60000] = "MINUTE";
+    Time[Time["HOUR"] = 3600000] = "HOUR";
+    Time[Time["DAY"] = 86400000] = "DAY";
+    Time[Time["WEEK"] = 604800000] = "WEEK";
+    Time[Time["MONTH"] = 2592000000] = "MONTH";
+    Time[Time["YEAR"] = 31536000000] = "YEAR";
+})(Time || (Time = {}));
+
 
 /***/ })
 

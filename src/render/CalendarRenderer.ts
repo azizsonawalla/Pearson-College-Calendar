@@ -8,6 +8,7 @@ import { ISAMSFeedParser } from "../feed/ISAMSFeedParser";
 import { Config } from "../config/Config";
 import { getModalRenderer } from "./ModalRenderer";
 import { LoaderRenderer } from "./LoaderRenderer"
+import { Cache } from "../feed/Cache";
 
 interface FetchArgs {
   start: Date;
@@ -68,9 +69,23 @@ function getHeaderToolbarConfig(): ToolbarInput {
   };
 }
 
+/**
+ * Builds and returns the configuration object for the footer toolbar
+ */
+function getFooterToolbarConfig(): ToolbarInput {
+  return {
+    right: "clearCache",
+  };
+}
+
 function getCalendarStyle(): {} {
   // TODO
   return {};
+}
+
+function clearCacheAndRefreshPage() {
+  Cache.clearCache()
+  location.reload()
 }
 
 /**
@@ -84,12 +99,19 @@ function buildCalendarObject(calendarElement: HTMLElement): Calendar {
     nowIndicator: true,
     plugins: getPlugins(),
     headerToolbar: getHeaderToolbarConfig(),
+    footerToolbar: getFooterToolbarConfig(),
     initialDate: Config.GeneralConfig.INITIAL_DATE,
     navLinks: Config.GeneralConfig.ENABLE_NAV_LINKS_ON_DAY_NAMES,
     editable: Config.GeneralConfig.CALENDAR_IS_EDITABLE,
     dayMaxEvents: Config.GeneralConfig.COLLAPSE_EVENTS_TO_MORE_LINK,
     events: fetchEvents,
     eventClick: getModalRenderer(),
+    customButtons: {
+      clearCache: {
+        text: 'Refresh',
+        click: clearCacheAndRefreshPage
+      }
+    },
     ... getCalendarStyle()
   });
 }
